@@ -75,3 +75,12 @@ func NewBoat(team, x, y int) *Character {
 		x, y,
 		BoatImage, BOAT}
 }
+
+
+func (c *Character) Draw(scrollX, scrollY int, surf *sdl.Surface) {
+	surf.Blit(&sdl.Rect{
+		int16(c.x - scrollX),
+		int16(c.y - scrollY),
+		0, 0},
+		c.image, nil)
+}

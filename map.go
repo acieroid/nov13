@@ -17,7 +17,7 @@ type Map struct {
 	images []*sdl.Surface
 }
 
-func LoadMap(name string) (m *Map) {
+func LoadMap(name string) (m *Map, units []*Character) {
 	m = &Map{}
 	file, err := os.Open(strings.Join([]string{"maps/", name, ".txt"}, ""))
 	if err != nil {
@@ -59,7 +59,7 @@ func LoadMap(name string) (m *Map) {
 	unitsLine, _ := reader.ReadString('\n')
 	nUnits, err := strconv.Atoi(unitsLine[:len(unitsLine)-1])
 	if err != nil { log.Fatal(err) }
-	units := make([]*Character, nUnits)
+	units = make([]*Character, nUnits)
 
 	for i := 0; i < nUnits; i++ {
 		unitType, _ := reader.ReadString(' ')
@@ -72,6 +72,8 @@ func LoadMap(name string) (m *Map) {
 		if err != nil { log.Fatal(err) }
 		y, err := strconv.Atoi(YLine[:len(YLine)-1])
 		if err != nil { log.Fatal(err) }
+		x = x*TILESIZE
+		y = y*TILESIZE
 		switch unitType[0] {
 		case 'W':
 			units[i] = NewWarrior(team, x, y)

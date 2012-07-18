@@ -60,7 +60,7 @@ func main() {
 
 	scrollX := 0
 	scrollY := 0
-	m := LoadMap(*MapName)
+	m, units := LoadMap(*MapName)
 
 	for true {
 		select {
@@ -90,6 +90,9 @@ func main() {
 		screen.FillRect(nil, 0x000000)
 
 		m.Draw(scrollX, scrollY, screen)
+		for i := 0; i < len(units); i++ {
+			units[i].Draw(scrollX, scrollY, screen)
+		}
 
 		screen.Flip()
 		time.Sleep(250)
