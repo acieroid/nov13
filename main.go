@@ -5,6 +5,7 @@ import (
 	"time"
 	"reflect"
 	"flag"
+	"fmt"
 )
 
 var SCROLLSTEP int = 5
@@ -82,6 +83,11 @@ func main() {
 					scrollY = Min(scrollY+SCROLLSTEP, *Height)
 				case sdl.K_ESCAPE:
 					return
+				}
+			case reflect.TypeOf(sdl.MouseButtonEvent{}):
+				m := ev.(sdl.MouseButtonEvent)
+				if m.Type == sdl.MOUSEBUTTONDOWN && m.Button == 1 {
+					fmt.Println("Mouse clicked at ", m.X, m.Y)
 				}
 			}
 		default:
