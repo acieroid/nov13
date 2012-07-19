@@ -6,7 +6,6 @@ import (
 	"time"
 	"reflect"
 	"flag"
-	"fmt"
 )
 
 var SCROLLSTEP int = 5
@@ -74,6 +73,7 @@ func main() {
 	scrollX := 0
 	scrollY := 0
 	m, units := LoadMap(*MapName)
+	var menu Menu
 
 	for true {
 		select {
@@ -101,10 +101,12 @@ func main() {
 				if e.Type == sdl.MOUSEBUTTONDOWN && e.Button == 1 {
 					x := int(e.X) + scrollX
 					y := int(e.Y) + scrollY
-					if x < m.width * TILESIZE && y < m.height * TILESIZE {
+					if menu != nil && menu.Contains(x, y) {
+						menu = menu.Clicked(x, y)
+					} else if x < m.width * TILESIZE && y < m.height * TILESIZE {
 						for i := 0; i < len(units); i++ {
 							if units[i].Contains(x, y) {
-								fmt.Println("Unit clicked: ", units[i])
+								menu = NewCharacterMenu(units[i])
 								break
 							}
 						}
@@ -119,6 +121,9 @@ func main() {
 		m.Draw(scrollX, scrollY, screen)
 		for i := 0; i < len(units); i++ {
 			units[i].Draw(scrollX, scrollY, screen)
+		}
+		if menu != nil {
+			menu.Draw(scrollX, scrollY, screen)
 		}
 
 		screen.Flip()

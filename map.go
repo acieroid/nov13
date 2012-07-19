@@ -2,11 +2,11 @@ package main
 
 import (
 	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
-	"strings"
 	"os"
 	"log"
 	"bufio"
 	"strconv"
+	"fmt"
 )
 
 var TILESIZE int = 32
@@ -19,7 +19,7 @@ type Map struct {
 
 func LoadMap(name string) (m *Map, units []*Character) {
 	m = &Map{}
-	file, err := os.Open(strings.Join([]string{"maps/", name, ".txt"}, ""))
+	file, err := os.Open(fmt.Sprintf("maps/%s.txt", name))
 	if err != nil {
 		panic(err)
 	}

@@ -8,12 +8,13 @@ import (
 /* TODO: bonus/malus */
 type Character struct {
 	team int
-	moveSpeed, attackSpeed float64
+	moveSpeed, attackSpeed int
 	life, maxLife int
 	damage, damageSize int
 	x, y int
 	image *sdl.Surface
 	Type int
+	nextAction Action
 }
 
 var WarriorImage *sdl.Surface
@@ -29,17 +30,17 @@ const (
 const (
 	WMOVESPEED = 5
 	WATTACKSPEED = 7
-	WDAMAGESIZE = 10
+	WDAMAGESIZE = 25
 	WDAMAGE = 7
 	WLIFE = 20
 	AMOVESPEED = 7
 	AATTACKSPEED = 5
-	ADAMAGESIZE = 7
+	ADAMAGESIZE = 15
 	ADAMAGE = 6
 	ALIFE = 20
 	BMOVESPEED = 8
 	BATTACKSPEED = 3
-	BDAMAGESIZE = 12
+	BDAMAGESIZE = 40
 	BDAMAGE = 15
 	BLIFE = 30
 )
@@ -52,7 +53,7 @@ func NewWarrior(team, x, y int) *Character {
 		WMOVESPEED, WATTACKSPEED,
 		WLIFE, WLIFE, WDAMAGE, WDAMAGESIZE,
 		x, y,
-		WarriorImage, WARRIOR}
+		WarriorImage, WARRIOR, nil}
 }
 
 func NewArcher(team, x, y int) *Character {
@@ -63,7 +64,7 @@ func NewArcher(team, x, y int) *Character {
 		AMOVESPEED, AATTACKSPEED,
 		ALIFE, ALIFE, ADAMAGE, ADAMAGESIZE,
 		x, y,
-		ArcherImage, ARCHER}
+		ArcherImage, ARCHER, nil}
 }
 
 func NewBoat(team, x, y int) *Character {
@@ -74,7 +75,7 @@ func NewBoat(team, x, y int) *Character {
 		BMOVESPEED, BATTACKSPEED,
 		BLIFE, BLIFE, BDAMAGE, BDAMAGESIZE,
 		x, y,
-		BoatImage, BOAT}
+		BoatImage, BOAT, nil}
 }
 
 
