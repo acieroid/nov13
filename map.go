@@ -72,8 +72,8 @@ func LoadMap(name string) (m *Map, units []*Character) {
 		if err != nil { log.Fatal(err) }
 		y, err := strconv.Atoi(YLine[:len(YLine)-1])
 		if err != nil { log.Fatal(err) }
-		x = x*TILESIZE
-		y = y*TILESIZE
+		x = x*TILESIZE + TILESIZE/2
+		y = y*TILESIZE + TILESIZE/2
 		switch unitType[0] {
 		case 'W':
 			units[i] = NewWarrior(team, x, y)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
+	"github.com/0xe2-0x9a-0x9b/Go-SDL/ttf"
 	"time"
 	"reflect"
 	"flag"
@@ -9,6 +10,7 @@ import (
 )
 
 var SCROLLSTEP int = 5
+var Font *ttf.Font
 var MapName = flag.String("map", "foo", "Map to play")
 var Width = flag.Int("width", 640, "Width of the window")
 var Height = flag.Int("height", 480, "Height of the window")
@@ -30,21 +32,28 @@ func Min(x, y int) int {
 
 func LoadImage(name string) *sdl.Surface {
 	image := sdl.Load(name)
-
 	if image == nil {
 		panic(sdl.GetError())
 	}
-
 	return image
+}
+
+func LoadFont(name string) *ttf.Font {
+	font := ttf.OpenFont(name, 12)
+	if font == nil {
+		panic(sdl.GetError())
+	}
+	return font
 }
 
 func main() {
 	flag.Parse()
-	if sdl.Init(sdl.INIT_VIDEO) != 0 {
+	if sdl.Init(sdl.INIT_VIDEO) != 0 || ttf.Init() != 0 {
 		panic(sdl.GetError())
 	}
 
 	defer sdl.Quit()
+	defer ttf.Quit()
 
 	var videoMode uint32 = 0
 	if *Fullscreen {
@@ -59,6 +68,9 @@ func main() {
 	sdl.WM_SetCaption("Novendiales 13", "")
 	sdl.EnableKeyRepeat(10, 10)
 
+	Font = LoadFont("font.ttf")
+	defer Font.Close()
+
 	scrollX := 0
 	scrollY := 0
 	m, units := LoadMap(*MapName)
@@ -71,8 +83,8 @@ func main() {
 			case reflect.TypeOf(sdl.QuitEvent{}):
 				return
 			case reflect.TypeOf(sdl.KeyboardEvent{}):
-				k := ev.(sdl.KeyboardEvent)
-				switch k.Keysym.Sym {
+				e := ev.(sdl.KeyboardEvent)
+				switch e.Keysym.Sym {
 				case sdl.K_LEFT:
 					scrollX = Max(scrollX-SCROLLSTEP, 0)
 				case sdl.K_RIGHT:
@@ -85,9 +97,18 @@ func main() {
 					return
 				}
 			case reflect.TypeOf(sdl.MouseButtonEvent{}):
-				m := ev.(sdl.MouseButtonEvent)
-				if m.Type == sdl.MOUSEBUTTONDOWN && m.Button == 1 {
-					fmt.Println("Mouse clicked at ", m.X, m.Y)
+				e := ev.(sdl.MouseButtonEvent)
+				if e.Type == sdl.MOUSEBUTTONDOWN && e.Button == 1 {
+					x := int(e.X) + scrollX
+					y := int(e.Y) + scrollY
+					if x < m.width * TILESIZE && y < m.height * TILESIZE {
+						for i := 0; i < len(units); i++ {
+							if units[i].Contains(x, y) {
+								fmt.Println("Unit clicked: ", units[i])
+								break
+							}
+						}
+					}
 				}
 			}
 		default:
@@ -104,4 +125,10 @@ func main() {
 		time.Sleep(250)
 	}
 
+}
+
+func DrawText(text string, x, y int, surf *sdl.Surface) {
+	surf.Blit(&sdl.Rect{int16(x), int16(y), 0, 0},
+		ttf.RenderUTF8_Solid(Font, text, sdl.Color{0, 0, 0, 0}),
+		nil)
 }

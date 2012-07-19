@@ -2,13 +2,14 @@ package main
 
 import (
 	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
+	"fmt"
 )
 
 /* TODO: bonus/malus */
 type Character struct {
 	team int
 	moveSpeed, attackSpeed float64
-	life int
+	life, maxLife int
 	damage, damageSize int
 	x, y int
 	image *sdl.Surface
@@ -49,7 +50,7 @@ func NewWarrior(team, x, y int) *Character {
 	}
 	return &Character{team,
 		WMOVESPEED, WATTACKSPEED,
-		WLIFE, WDAMAGE, WDAMAGESIZE,
+		WLIFE, WLIFE, WDAMAGE, WDAMAGESIZE,
 		x, y,
 		WarriorImage, WARRIOR}
 }
@@ -60,7 +61,7 @@ func NewArcher(team, x, y int) *Character {
 	}
 	return &Character{team,
 		AMOVESPEED, AATTACKSPEED,
-		ALIFE, ADAMAGE, ADAMAGESIZE,
+		ALIFE, ALIFE, ADAMAGE, ADAMAGESIZE,
 		x, y,
 		ArcherImage, ARCHER}
 }
@@ -71,7 +72,7 @@ func NewBoat(team, x, y int) *Character {
 	}
 	return &Character{team,
 		BMOVESPEED, BATTACKSPEED,
-		BLIFE, BDAMAGE, BDAMAGESIZE,
+		BLIFE, BLIFE, BDAMAGE, BDAMAGESIZE,
 		x, y,
 		BoatImage, BOAT}
 }
@@ -79,8 +80,17 @@ func NewBoat(team, x, y int) *Character {
 
 func (c *Character) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 	surf.Blit(&sdl.Rect{
-		int16(c.x - scrollX),
-		int16(c.y - scrollY),
+		int16(c.x - TILESIZE/2 - scrollX),
+		int16(c.y - TILESIZE/2 - scrollY),
 		0, 0},
 		c.image, nil)
+	DrawText(fmt.Sprintf("%d/%d", c.life, c.maxLife),
+		c.x - TILESIZE/2 - scrollX,
+		c.y - TILESIZE/2 - scrollY,
+		surf)
+}
+
+func (c *Character) Contains(x, y int) bool {
+	return (x > c.x - TILESIZE/2 && x < c.x + TILESIZE/2 &&
+		y > c.y - TILESIZE/2 && y < c.y + TILESIZE/2)
 }
