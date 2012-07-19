@@ -89,6 +89,12 @@ func (c *Character) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 		c.x - TILESIZE/2 - scrollX,
 		c.y - TILESIZE/2 - scrollY,
 		surf)
+	if c.nextAction != nil {
+		DrawText(c.nextAction.Name(),
+			c.x - TILESIZE/2 - scrollX,
+			c.y - TILESIZE/2 - scrollY + 14,
+			surf)
+	}
 }
 
 func (c *Character) Contains(x, y int) bool {

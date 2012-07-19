@@ -2,6 +2,7 @@ package main
 
 type Action interface {
 	Apply(c *Character, units []*Character, delta int)
+	Name() string
 }
 
 type MoveAction struct {
@@ -19,6 +20,10 @@ func (a *MoveAction) Apply(c *Character, units []*Character, delta int) {
 	c.y += dy
 }
 
+func (a *MoveAction) Name() string {
+	return "Se déplace"
+}
+
 type AttackAction struct {
 	x, y int
 	nextAttack int
@@ -32,6 +37,10 @@ func (a *AttackAction) Apply(c *Character, units[]*Character, delta int) {
 	/* TODO */
 }
 
+func (a *AttackAction) Name() string {
+	return "Attaque"
+}
+
 type WaitAction struct {
 }
 
@@ -40,4 +49,9 @@ func NewWaitAction() *WaitAction {
 }
 
 func (a *WaitAction) Apply(c *Character, units[]*Character, delta int) {
+	/* Do nothing */
+}
+
+func (a *WaitAction) Name() string {
+	return "Se tourne les pouces"
 }
