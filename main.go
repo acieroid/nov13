@@ -3,9 +3,10 @@ package main
 import (
 	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
 	"github.com/0xe2-0x9a-0x9b/Go-SDL/ttf"
-	"time"
+	"github.com/0xe2-0x9a-0x9b/Go-SDL/gfx"
 	"reflect"
 	"flag"
+	"time"
 )
 
 const (
@@ -81,6 +82,9 @@ func main() {
 	var menu Menu
 	mode := GAME
 	watchButton := NewWatchButton(*Width-100, *Height - 30)
+	fps := gfx.NewFramerate()
+	fps.SetFramerate(30)
+	lastUpdate := time.Now()
 
 	for true {
 		select {
@@ -114,6 +118,7 @@ func main() {
 						mode = WATCH
 						menu = nil
 						watchButton.Enabled()
+						lastUpdate = time.Now()
 					} else if mode == GAME && x < m.width * TILESIZE && y < m.height * TILESIZE {
 						for _, unit := range(units) {
 							if unit.Contains(x, y) && unit.team == 1 {
@@ -125,6 +130,15 @@ func main() {
 				}
 			}
 		default:
+		}
+
+		if mode == WATCH {
+			for _, unit := range(units) {
+				if unit.nextAction != nil {
+					unit.nextAction.Apply(unit, units, int(time.Since(lastUpdate)/1e7))
+				}
+			}
+			lastUpdate = time.Now()
 		}
 
 		screen.FillRect(nil, 0x000000)
@@ -139,7 +153,8 @@ func main() {
 		watchButton.Draw(screen)
 
 		screen.Flip()
-		time.Sleep(250)
+		//time.Sleep(250)
+		fps.FramerateDelay()
 	}
 
 }
