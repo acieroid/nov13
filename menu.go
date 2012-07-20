@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
-	"fmt"
 )
 
 type Menu interface {
@@ -60,29 +59,36 @@ func (m *CharacterMenu) Clicked(x, y int) Menu {
 
 type AttackMenu struct {
 	c *Character
-	surface *sdl.Surface
+	green, red *sdl.Surface
 }
 
 func NewAttackMenu(c *Character) *AttackMenu {
-	surf :=	sdl.CreateRGBSurface(sdl.HWSURFACE,
+	green := sdl.CreateRGBSurface(sdl.HWSURFACE,
 		c.damageSize, c.damageSize,
 		32, 0, 0, 0, 0)
-	surf.FillRect(&sdl.Rect{0, 0,
+	green.FillRect(&sdl.Rect{0, 0,
+		uint16(c.damageSize), uint16(c.damageSize)},
+		0x0000FF00)
+	green.SetAlpha(sdl.SRCALPHA, 200)
+	red := sdl.CreateRGBSurface(sdl.HWSURFACE,
+		c.damageSize, c.damageSize,
+		32, 0, 0, 0, 0)
+	red.FillRect(&sdl.Rect{0, 0,
 		uint16(c.damageSize), uint16(c.damageSize)},
 		0x00FF0000)
-  surf.SetAlpha(sdl.SRCALPHA, 200)
-	return &AttackMenu{c, surf}
+	red.SetAlpha(sdl.SRCALPHA, 200)
+	return &AttackMenu{c, green, red}
 }
 
 func (m *AttackMenu) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 	var x, y int
 	/* this sucks in SDL binding, we should use a multiple value return */
 	sdl.GetMouseState(&x, &y)
-	surf.Blit(&sdl.Rect{
-		int16(x - m.c.damageSize/2),
-		int16(y - m.c.damageSize/2),
-		0, 0},
-		m.surface, nil)
+	s := m.green
+	if Square(x - m.c.x) + Square(y - m.c.y) > Square(m.c.damageRange) {
+		s = m.red
+	}
+	DrawImage(x - m.c.damageSize/2, y - m.c.damageSize/2, s, surf)
 }
 
 func (m *AttackMenu) Contains(x, y int) bool {
@@ -91,7 +97,9 @@ func (m *AttackMenu) Contains(x, y int) bool {
 }
 
 func (m *AttackMenu) Clicked(x, y int) Menu {
-	m.c.nextAction = NewAttackAction(x, y, m.c.attackSpeed)
+	if Square(x - m.c.x) + Square(y-m.c.y) < Square(m.c.damageRange) {
+		m.c.nextAction = NewAttackAction(x, y, m.c.attackSpeed)
+	}
 	return nil
 }
 
@@ -117,14 +125,14 @@ func NewMoveMenu(c *Character) (m *MoveMenu) {
 
 
 func (m *MoveMenu) Draw(scrollX, scrollY int, surf *sdl.Surface) {
-	DrawImage(m.c.x - 3*TILESIZE/2, m.c.y - TILESIZE/2, Left, surf)
-	DrawImage(m.c.x - 3*TILESIZE/2, m.c.y - 3*TILESIZE/2, TopLeft, surf)
-	DrawImage(m.c.x - 3*TILESIZE/2, m.c.y + TILESIZE/2, BottomLeft, surf)
-	DrawImage(m.c.x - TILESIZE/2, m.c.y - 3*TILESIZE/2, Up, surf)
-	DrawImage(m.c.x - TILESIZE/2, m.c.y + TILESIZE/2, Down, surf)
-	DrawImage(m.c.x + TILESIZE/2, m.c.y - 3*TILESIZE/2, TopRight, surf)
-	DrawImage(m.c.x + TILESIZE/2, m.c.y - TILESIZE/2, Right, surf)
-	DrawImage(m.c.x + TILESIZE/2, m.c.y + TILESIZE/2, BottomRight, surf)
+	DrawImage(m.c.x - 3*TILESIZE/2 - scrollX, m.c.y - TILESIZE/2 - scrollY, Left, surf)
+	DrawImage(m.c.x - 3*TILESIZE/2 - scrollX, m.c.y - 3*TILESIZE/2 - scrollY, TopLeft, surf)
+	DrawImage(m.c.x - 3*TILESIZE/2 - scrollX, m.c.y + TILESIZE/2 - scrollY, BottomLeft, surf)
+	DrawImage(m.c.x - TILESIZE/2 - scrollX, m.c.y - 3*TILESIZE/2 - scrollY, Up, surf)
+	DrawImage(m.c.x - TILESIZE/2 - scrollX, m.c.y + TILESIZE/2 - scrollY, Down, surf)
+	DrawImage(m.c.x + TILESIZE/2 - scrollX, m.c.y - 3*TILESIZE/2 - scrollY, TopRight, surf)
+	DrawImage(m.c.x + TILESIZE/2 - scrollX, m.c.y - TILESIZE/2 - scrollY, Right, surf)
+	DrawImage(m.c.x + TILESIZE/2 - scrollX, m.c.y + TILESIZE/2 - scrollY, BottomRight, surf)
 }
 
 func (m *MoveMenu) Contains(x, y int) bool {

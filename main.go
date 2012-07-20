@@ -105,7 +105,7 @@ func main() {
 						menu = menu.Clicked(x, y)
 					} else if x < m.width * TILESIZE && y < m.height * TILESIZE {
 						for i := 0; i < len(units); i++ {
-							if units[i].Contains(x, y) {
+							if units[i].Contains(x, y) && units[i].team == 1 {
 								menu = NewCharacterMenu(units[i])
 								break
 							}
@@ -140,4 +140,8 @@ func DrawText(text string, x, y int, surf *sdl.Surface) {
 
 func DrawImage(x, y int, img, surf *sdl.Surface) {
 	surf.Blit(&sdl.Rect{int16(x), int16(y), 0, 0}, img, nil)
+}
+
+func Square(x int) int {
+	return x*x
 }
