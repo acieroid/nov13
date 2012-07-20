@@ -38,11 +38,17 @@ func (a *AttackAction) Apply(c *Character, units[]*Character, delta int) {
 	if a.nextAttack < 0 {
 		a.nextAttack += c.attackSpeed*10
 		for _, unit := range units {
-			if unit.x > a.x - c.damageSize/2 &&
-				unit.x < a.x + c.damageSize/2 &&
-				unit.y > a.y - c.damageSize/2 &&
-				unit.y < a.y + c.damageSize/2 {
-				unit.life -= c.damage
+			top := a.y - c.damageSize/2
+			bottom := a.y + c.damageSize/2
+			left := a.x - c.damageSize/2
+			right := a.x + c.damageSize
+			if unit.Alive() &&
+				(unit.Contains(top, left) ||
+				unit.Contains(top, right) ||
+				unit.Contains(bottom, left) ||
+				unit.Contains(bottom, right)) {
+				damage := Min(unit.life, c.damage)
+				unit.life -= damage
 			}
 		}
 	}

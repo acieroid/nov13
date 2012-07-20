@@ -12,7 +12,8 @@ import (
 const (
 	GAME = iota
 	WATCH
-	SCROLLSTEP = 5
+	SCROLLSTEP = 5 /* scrolls 5px at a time */
+	WATCHTIME = 3 /* 3 seconds of watch */
 )
 
 var Font *ttf.Font
@@ -133,12 +134,17 @@ func main() {
 		}
 
 		if mode == WATCH {
-			for _, unit := range(units) {
-				if unit.nextAction != nil {
-					unit.nextAction.Apply(unit, units, int(time.Since(lastUpdate)/1e7))
+			if watchButton.WatchFinished() {
+				mode = GAME
+				watchButton.Disabled()
+			} else {
+				for _, unit := range(units) {
+					if unit.nextAction != nil {
+						unit.nextAction.Apply(unit, units, int(time.Since(lastUpdate)/1e7))
+					}
 				}
+				lastUpdate = time.Now()
 			}
-			lastUpdate = time.Now()
 		}
 
 		screen.FillRect(nil, 0x000000)

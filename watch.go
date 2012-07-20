@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
 	"github.com/0xe2-0x9a-0x9b/Go-SDL/ttf"
+	"time"
 )
 
 type WatchButton struct {
@@ -10,6 +11,7 @@ type WatchButton struct {
 	enabled bool
 	bg, text, grayText *sdl.Surface
 	bgPos, textPos *sdl.Rect
+	lastStart time.Time
 }
 
 func NewWatchButton(x, y int) *WatchButton {
@@ -19,7 +21,7 @@ func NewWatchButton(x, y int) *WatchButton {
 	text := ttf.RenderUTF8_Solid(Font, "Regarder !", sdl.Color{255, 255, 255, 0})
 	grayText := ttf.RenderUTF8_Solid(Font, "Regarder !", sdl.Color{128, 128, 128, 0})
 	textPos := &sdl.Rect{int16(x+2), int16(y+2), 0, 0}
-	return &WatchButton{x, y, false, bg, text, grayText, bgPos, textPos}
+	return &WatchButton{x, y, false, bg, text, grayText, bgPos, textPos, time.Now()}
 }
 
 func (w *WatchButton) Draw(surf *sdl.Surface) {
@@ -37,8 +39,13 @@ func (w *WatchButton) Contains(x, y int) bool {
 
 func (w *WatchButton) Enabled() {
 	w.enabled = true
+	w.lastStart = time.Now()
 }
 
 func (w *WatchButton) Disabled() {
 	w.enabled = false
+}
+
+func (w *WatchButton) WatchFinished() bool {
+	return int64(time.Since(w.lastStart)) > WATCHTIME*1e9
 }
