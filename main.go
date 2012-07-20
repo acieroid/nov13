@@ -137,3 +137,7 @@ func DrawText(text string, x, y int, surf *sdl.Surface) {
 		ttf.RenderUTF8_Solid(Font, text, sdl.Color{0, 0, 0, 0}),
 		nil)
 }
+
+func DrawImage(x, y int, img, surf *sdl.Surface) {
+	surf.Blit(&sdl.Rect{int16(x), int16(y), 0, 0}, img, nil)
+}
