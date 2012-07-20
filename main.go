@@ -104,9 +104,9 @@ func main() {
 					if menu != nil && menu.Contains(x, y) {
 						menu = menu.Clicked(x, y)
 					} else if x < m.width * TILESIZE && y < m.height * TILESIZE {
-						for i := 0; i < len(units); i++ {
-							if units[i].Contains(x, y) && units[i].team == 1 {
-								menu = NewCharacterMenu(units[i])
+						for _, unit := range(units) {
+							if unit.Contains(x, y) && unit.team == 1 {
+								menu = NewCharacterMenu(unit)
 								break
 							}
 						}
@@ -119,8 +119,8 @@ func main() {
 		screen.FillRect(nil, 0x000000)
 
 		m.Draw(scrollX, scrollY, screen)
-		for i := 0; i < len(units); i++ {
-			units[i].Draw(scrollX, scrollY, screen)
+		for _, unit := range(units) {
+			unit.Draw(scrollX, scrollY, screen)
 		}
 		if menu != nil {
 			menu.Draw(scrollX, scrollY, screen)
