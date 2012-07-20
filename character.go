@@ -111,3 +111,15 @@ func (c *Character) Contains(x, y int) bool {
 func (c *Character) Alive() bool {
 	return c.life > 0
 }
+
+func (c *Character) Name() string {
+	switch c.Type {
+	case WARRIOR:
+		return "Guerrier"
+	case ARCHER:
+		return "Archer"
+	case BOAT:
+		return "Navire"
+	}
+	return "Inconnu ?!!"
+}

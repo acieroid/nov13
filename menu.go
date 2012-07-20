@@ -69,7 +69,7 @@ func NewAttackMenu(c *Character) *AttackMenu {
 	green.FillRect(&sdl.Rect{0, 0,
 		uint16(c.damageSize), uint16(c.damageSize)},
 		0x0000FF00)
-	green.SetAlpha(sdl.SRCALPHA, 200)
+	green.SetAlpha(sdl.SRCALPHA, 150)
 	red := sdl.CreateRGBSurface(sdl.HWSURFACE,
 		c.damageSize, c.damageSize,
 		32, 0, 0, 0, 0)

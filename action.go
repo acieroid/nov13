@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 type Action interface {
 	Apply(c *Character, units []*Character, delta int)
 	Name() string
@@ -49,6 +53,14 @@ func (a *AttackAction) Apply(c *Character, units[]*Character, delta int) {
 				unit.Contains(bottom, right)) {
 				damage := Min(unit.life, c.damage)
 				unit.life -= damage
+				if !unit.Alive() {
+					switch unit.team {
+					case 1:
+						AddMessage(fmt.Sprintf("Une de vos unité (%s) est morte", unit.Name()))
+					case 2:
+						AddMessage(fmt.Sprintf("Une unité ennemie (%s) est morte", unit.Name()))
+					}
+				}
 			}
 		}
 	}

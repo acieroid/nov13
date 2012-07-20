@@ -86,6 +86,8 @@ func main() {
 	fps := gfx.NewFramerate()
 	fps.SetFramerate(30)
 	lastUpdate := time.Now()
+	lastWatchUpdate := time.Now()
+	InitMessages(*Width, *Height)
 
 	for true {
 		select {
@@ -116,10 +118,11 @@ func main() {
 					if menu != nil && menu.Contains(x, y) {
 						menu = menu.Clicked(x, y)
 					} else if mode == GAME && watchButton.Contains(x, y) {
+						AddMessage("Regardons…")
 						mode = WATCH
 						menu = nil
 						watchButton.Enabled()
-						lastUpdate = time.Now()
+						lastWatchUpdate = time.Now()
 					} else if mode == GAME && x < m.width * TILESIZE && y < m.height * TILESIZE {
 						for _, unit := range(units) {
 							if unit.Contains(x, y) && unit.team == 1 {
@@ -135,15 +138,21 @@ func main() {
 
 		if mode == WATCH {
 			if watchButton.WatchFinished() {
+				AddMessage("Fin du tour")
 				mode = GAME
 				watchButton.Disabled()
+				for _, unit := range(units) {
+					unit.nextAction = nil
+				}
 			} else {
 				for _, unit := range(units) {
 					if unit.nextAction != nil {
-						unit.nextAction.Apply(unit, units, int(time.Since(lastUpdate)/1e7))
+						unit.nextAction.Apply(unit,
+							units,
+							int(time.Since(lastWatchUpdate)/1e7))
 					}
 				}
-				lastUpdate = time.Now()
+				lastWatchUpdate = time.Now()
 			}
 		}
 
@@ -157,10 +166,11 @@ func main() {
 			menu.Draw(scrollX, scrollY, screen)
 		}
 		watchButton.Draw(screen)
+		DrawMessages(int(time.Since(lastUpdate))/1e6, screen)
 
 		screen.Flip()
-		//time.Sleep(250)
 		fps.FramerateDelay()
+		lastUpdate = time.Now()
 	}
 
 }
