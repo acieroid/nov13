@@ -46,7 +46,7 @@ func (a *AttackAction) Apply(c *Character, units[]*Character, delta int) {
 			bottom := a.y + c.damageSize/2
 			left := a.x - c.damageSize/2
 			right := a.x + c.damageSize
-			if unit.Alive() &&
+			if unit.Alive() && unit.team == 2 &&
 				(unit.Contains(top, left) ||
 				unit.Contains(top, right) ||
 				unit.Contains(bottom, left) ||
