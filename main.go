@@ -8,7 +8,12 @@ import (
 	"flag"
 )
 
-var SCROLLSTEP int = 5
+const (
+	GAME = iota
+	WATCH
+	SCROLLSTEP = 5
+)
+
 var Font *ttf.Font
 var MapName = flag.String("map", "foo", "Map to play")
 var Width = flag.Int("width", 640, "Width of the window")
@@ -74,6 +79,8 @@ func main() {
 	scrollY := 0
 	m, units := LoadMap(*MapName)
 	var menu Menu
+	mode := GAME
+	watchButton := NewWatchButton(*Width-100, *Height - 30)
 
 	for true {
 		select {
@@ -103,7 +110,11 @@ func main() {
 					y := int(e.Y) + scrollY
 					if menu != nil && menu.Contains(x, y) {
 						menu = menu.Clicked(x, y)
-					} else if x < m.width * TILESIZE && y < m.height * TILESIZE {
+					} else if mode == GAME && watchButton.Contains(x, y) {
+						mode = WATCH
+						menu = nil
+						watchButton.Enabled()
+					} else if mode == GAME && x < m.width * TILESIZE && y < m.height * TILESIZE {
 						for _, unit := range(units) {
 							if unit.Contains(x, y) && unit.team == 1 {
 								menu = NewCharacterMenu(unit)
@@ -125,6 +136,7 @@ func main() {
 		if menu != nil {
 			menu.Draw(scrollX, scrollY, screen)
 		}
+		watchButton.Draw(screen)
 
 		screen.Flip()
 		time.Sleep(250)
