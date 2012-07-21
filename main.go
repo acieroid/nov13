@@ -4,7 +4,6 @@ import (
 	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
 	"github.com/0xe2-0x9a-0x9b/Go-SDL/ttf"
 	"github.com/0xe2-0x9a-0x9b/Go-SDL/gfx"
-	"reflect"
 	"flag"
 	"time"
 )
@@ -12,12 +11,15 @@ import (
 const (
 	GAME = iota
 	WATCH
+	MENU
+	QUIT
 	SCROLLSTEP = 5 /* scrolls 5px at a time */
 	WATCHTIME = 3 /* 3 seconds of watch */
 )
 
 var Font *ttf.Font
-var MapName = flag.String("map", "foo", "Map to play")
+var BigFont *ttf.Font
+var MapDir = flag.String("maps", "maps", "Map directory")
 var Width = flag.Int("width", 640, "Width of the window")
 var Height = flag.Int("height", 480, "Height of the window")
 var Fullscreen = flag.Bool("fullscreen", false, "Fullscreen")
@@ -44,8 +46,8 @@ func LoadImage(name string) *sdl.Surface {
 	return image
 }
 
-func LoadFont(name string) *ttf.Font {
-	font := ttf.OpenFont(name, 12)
+func LoadFont(name string, size int) *ttf.Font {
+	font := ttf.OpenFont(name, size)
 	if font == nil {
 		panic(sdl.GetError())
 	}
@@ -65,8 +67,8 @@ func main() {
 	if *Fullscreen {
 		videoMode = sdl.FULLSCREEN
 	}
-	var screen = sdl.SetVideoMode(*Width, *Height, 32, videoMode)
 
+	var screen = sdl.SetVideoMode(*Width, *Height, 32, videoMode)
 	if screen == nil {
 		panic(sdl.GetError())
 	}
@@ -74,99 +76,39 @@ func main() {
 	sdl.WM_SetCaption("Novendiales 13", "")
 	sdl.EnableKeyRepeat(10, 10)
 
-	Font = LoadFont("font.ttf")
+	Font = LoadFont("font.ttf", 12)
 	defer Font.Close()
+	BigFont = LoadFont("font.ttf", 20)
+	defer BigFont.Close()
 
-	scrollX := 0
-	scrollY := 0
-	m, units := LoadMap(*MapName)
-	var menu Menu
-	mode := GAME
-	watchButton := NewWatchButton(*Width-100, *Height - 30)
+	var game *Game
+	menu := NewMainMenu(*MapDir, *Width, *Height)
 	fps := gfx.NewFramerate()
 	fps.SetFramerate(30)
-	lastUpdate := time.Now()
-	lastWatchUpdate := time.Now()
 	InitMessages(*Width, *Height)
+	lastUpdate := time.Now()
+	delta := 0
+	mode := MENU
+	mapName := ""
 
 	for true {
-		select {
-		case ev := <-sdl.Events:
-			/* TODO: something more clean for the cases ? */
-			switch reflect.TypeOf(ev) {
-			case reflect.TypeOf(sdl.QuitEvent{}):
-				return
-			case reflect.TypeOf(sdl.KeyboardEvent{}):
-				e := ev.(sdl.KeyboardEvent)
-				switch e.Keysym.Sym {
-				case sdl.K_LEFT:
-					scrollX = Max(scrollX-SCROLLSTEP, 0)
-				case sdl.K_RIGHT:
-					scrollX = Min(scrollX+SCROLLSTEP, *Width)
-				case sdl.K_UP:
-					scrollY = Max(scrollY-SCROLLSTEP, 0)
-				case sdl.K_DOWN:
-					scrollY = Min(scrollY+SCROLLSTEP, *Height)
-				case sdl.K_ESCAPE:
-					return
-				}
-			case reflect.TypeOf(sdl.MouseButtonEvent{}):
-				e := ev.(sdl.MouseButtonEvent)
-				if e.Type == sdl.MOUSEBUTTONDOWN && e.Button == 1 {
-					x := int(e.X) + scrollX
-					y := int(e.Y) + scrollY
-					if menu != nil && menu.Contains(x, y) {
-						menu = menu.Clicked(x, y)
-					} else if mode == GAME && watchButton.Contains(x, y) {
-						AddMessage("Regardons…")
-						mode = WATCH
-						menu = nil
-						watchButton.Enabled()
-						lastWatchUpdate = time.Now()
-					} else if mode == GAME && x < m.width * TILESIZE && y < m.height * TILESIZE {
-						for _, unit := range(units) {
-							if unit.Contains(x, y) && unit.team == 1 {
-								menu = NewCharacterMenu(unit)
-								break
-							}
-						}
-					}
-				}
-			}
-		default:
-		}
-
-		if mode == WATCH {
-			if watchButton.WatchFinished() {
-				AddMessage("Fin du tour")
-				mode = GAME
-				watchButton.Disabled()
-				for _, unit := range(units) {
-					unit.nextAction = nil
-				}
-			} else {
-				for _, unit := range(units) {
-					if unit.nextAction != nil {
-						unit.nextAction.Apply(unit,
-							units,
-							int(time.Since(lastWatchUpdate)/1e7))
-					}
-				}
-				lastWatchUpdate = time.Now()
-			}
-		}
-
 		screen.FillRect(nil, 0x000000)
+		delta = int(time.Since(lastUpdate)/1e6)
 
-		m.Draw(scrollX, scrollY, screen)
-		for _, unit := range(units) {
-			unit.Draw(scrollX, scrollY, screen)
+		switch mode {
+		case MENU:
+			mapName, mode = menu.Run(screen)
+			if mode == GAME {
+				game = NewGame(mapName, *Width, *Height)
+			}
+		case GAME:
+			mode = game.Run(screen)
+		case QUIT:
+			return
 		}
-		if menu != nil {
-			menu.Draw(scrollX, scrollY, screen)
-		}
-		watchButton.Draw(screen)
-		DrawMessages(int(time.Since(lastUpdate))/1e6, screen)
+
+		DrawMessages(delta, screen)
+
 
 		screen.Flip()
 		fps.FramerateDelay()
@@ -180,6 +122,14 @@ func DrawText(text string, x, y int, surf *sdl.Surface) {
 		ttf.RenderUTF8_Solid(Font, text, sdl.Color{0, 0, 0, 0}),
 		nil)
 }
+
+func DrawTextBig(text string, x, y int, surf *sdl.Surface) {
+	surf.Blit(&sdl.Rect{int16(x) /* TODO: font metrics */,
+		int16(y), 0, 0},
+		ttf.RenderUTF8_Solid(BigFont, text, sdl.Color{255, 255, 255, 0}),
+		nil)
+}
+
 
 func DrawImage(x, y int, img, surf *sdl.Surface) {
 	surf.Blit(&sdl.Rect{int16(x), int16(y), 0, 0}, img, nil)
