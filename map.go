@@ -132,16 +132,23 @@ func (m *Map) TileAt(x, y int) int {
 func (m *Map) CanMove(c *Character, dx, dy int) bool {
 	x := c.x + dx
 	y := c.y + dy
-	if x - TILESIZE/2 < 0 || x + TILESIZE/2 > m.width*TILESIZE ||
-		y - TILESIZE/2 < 0 || y + TILESIZE/2 > m.height*TILESIZE {
+	left := x - TILESIZE/2
+	right := x + TILESIZE/2
+	top := y - TILESIZE/2
+	bottom := y + TILESIZE/2
+	if left < 0 || right > m.width*TILESIZE ||
+		top < 0 || bottom > m.height*TILESIZE {
 		return false
 	}
-	tile := m.TileAt(x, y)
-	switch {
-	case tile == WATER && c.Type != BOAT:
-		return false
-	case tile != WATER && c.Type == BOAT:
-		return false
+
+	if c.Type == BOAT {
+		return m.TileAt(left, top) == WATER &&
+			m.TileAt(right, top) == WATER &&
+			m.TileAt(left, bottom) == WATER &&
+			m.TileAt(right, bottom) == WATER
 	}
-	return true
+	return m.TileAt(left, top) != WATER &&
+		m.TileAt(right, top) != WATER &&
+		m.TileAt(left, bottom) != WATER &&
+		m.TileAt(right, bottom) != WATER
 }
