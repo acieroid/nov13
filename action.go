@@ -20,10 +20,10 @@ func NewMoveAction(dx, dy int) *MoveAction {
 func (a *MoveAction) Apply(c *Character, units []*Character, m *Map, delta int) {
 	dx := (a.dirX * delta * c.moveSpeed)/10
 	dy := (a.dirY * delta * c.moveSpeed)/10
-	left := c.x + dx - TILESIZE/2
-	right := c.x + dx + TILESIZE/2
-	top := c.y + dy - TILESIZE/2
-	bottom := c.y + dy + TILESIZE/2
+	left := c.x + dx - CHARACTERSIZE/2
+	right := c.x + dx + CHARACTERSIZE/2
+	top := c.y + dy - CHARACTERSIZE/2
+	bottom := c.y + dy + CHARACTERSIZE/2
 	/* will not walk on another character ? */
 	for _, unit := range units {
 		if unit != c &&

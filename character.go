@@ -5,6 +5,10 @@ import (
 	"fmt"
 )
 
+const (
+	CHARACTERSIZE = TILESIZE-8
+)
+
 /* TODO: bonus/malus */
 type Character struct {
 	team int
@@ -87,8 +91,8 @@ func (c *Character) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 		return
 	}
 	surf.Blit(&sdl.Rect{
-		int16(c.x - TILESIZE/2 - scrollX),
-		int16(c.y - TILESIZE/2 - scrollY),
+		int16(c.x - CHARACTERSIZE/2 - scrollX),
+		int16(c.y - CHARACTERSIZE/2 - scrollY),
 		0, 0},
 		c.image, nil)
 	DrawText(fmt.Sprintf("%d/%d", c.life, c.maxLife),
@@ -104,8 +108,8 @@ func (c *Character) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 }
 
 func (c *Character) Contains(x, y int) bool {
-	return (x >= c.x - TILESIZE/2 && x <= c.x + TILESIZE/2 &&
-		y >= c.y - TILESIZE/2 && y <= c.y + TILESIZE/2)
+	return (x >= c.x - CHARACTERSIZE/2 && x <= c.x + CHARACTERSIZE/2 &&
+		y >= c.y - CHARACTERSIZE/2 && y <= c.y + CHARACTERSIZE/2)
 }
 
 func (c *Character) Alive() bool {

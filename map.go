@@ -132,10 +132,10 @@ func (m *Map) TileAt(x, y int) int {
 func (m *Map) CanMove(c *Character, dx, dy int) bool {
 	x := c.x + dx
 	y := c.y + dy
-	left := x - TILESIZE/2
-	right := x + TILESIZE/2
-	top := y - TILESIZE/2
-	bottom := y + TILESIZE/2
+	left := x - CHARACTERSIZE/2
+	right := x + CHARACTERSIZE/2
+	top := y - CHARACTERSIZE/2
+	bottom := y + CHARACTERSIZE/2
 	/* still in the map ? */
 	if left < 0 || right > m.width*TILESIZE ||
 		top < 0 || bottom > m.height*TILESIZE {
