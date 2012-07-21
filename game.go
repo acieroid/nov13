@@ -81,12 +81,17 @@ func (g *Game) Run(screen *sdl.Surface) int {
 				y := int(e.Y) + g.scrollY
 				if g.menu != nil && g.menu.Contains(x, y) {
 					g.menu = g.menu.Clicked(x, y)
-				} else if g.mode == GAME && g.watchButton.Contains(int(e.X), int(e.Y)) {
-					AddMessage("Début du tour")
-					g.mode = WATCH
-					g.menu = nil
-					g.watchButton.Enabled()
-					g.lastWatchUpdate = time.Now()
+				} else if g.watchButton.Contains(int(e.X), int(e.Y)) {
+					if g.mode == GAME {
+						AddMessage("Début du tour")
+						g.mode = WATCH
+						g.menu = nil
+						g.watchButton.Enabled()
+						g.lastWatchUpdate = time.Now()
+					} else {
+						AddMessage("Fin du tour")
+						g.watchButton.Finish()
+					}
 				} else if g.mode == GAME && x < g.m.width * TILESIZE && y < g.m.height * TILESIZE {
 					for _, unit := range g.units {
 						if unit.Contains(x, y) && unit.team == 1 {

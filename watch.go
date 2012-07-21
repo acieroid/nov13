@@ -12,6 +12,7 @@ type WatchButton struct {
 	bg, text, grayText *sdl.Surface
 	bgPos, textPos *sdl.Rect
 	lastStart time.Time
+	finished bool
 }
 
 func NewWatchButton(x, y int) *WatchButton {
@@ -19,9 +20,9 @@ func NewWatchButton(x, y int) *WatchButton {
 	bg.FillRect(&sdl.Rect{0, 0, 80, 17}, 0x00123456)
 	bgPos := &sdl.Rect{int16(x), int16(y), 0, 0}
 	text := ttf.RenderUTF8_Solid(Font, "Regarder !", sdl.Color{255, 255, 255, 0})
-	grayText := ttf.RenderUTF8_Solid(Font, "Regarder !", sdl.Color{128, 128, 128, 0})
+	grayText := ttf.RenderUTF8_Solid(Font, "Jouer !", sdl.Color{128, 20, 20, 0})
 	textPos := &sdl.Rect{int16(x+2), int16(y+2), 0, 0}
-	return &WatchButton{x, y, false, bg, text, grayText, bgPos, textPos, time.Now()}
+	return &WatchButton{x, y, false, bg, text, grayText, bgPos, textPos, time.Now(), false}
 }
 
 func (w *WatchButton) Draw(surf *sdl.Surface) {
@@ -39,6 +40,7 @@ func (w *WatchButton) Contains(x, y int) bool {
 
 func (w *WatchButton) Enabled() {
 	w.enabled = true
+	w.finished = false
 	w.lastStart = time.Now()
 }
 
@@ -46,6 +48,10 @@ func (w *WatchButton) Disabled() {
 	w.enabled = false
 }
 
+func (w *WatchButton) Finish() {
+	w.finished = true
+}
+
 func (w *WatchButton) WatchFinished() bool {
-	return int64(time.Since(w.lastStart)) > WATCHTIME*1e9
+	return w.finished || int64(time.Since(w.lastStart)) > WATCHTIME*1e9
 }

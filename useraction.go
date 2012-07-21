@@ -19,10 +19,10 @@ func DrawUserAction(a UserAction, surf *sdl.Surface) {
 			0x00FF0000)
 		bgSurf.SetAlpha(sdl.SRCALPHA, 150)
 	}
-	surf.Blit(&sdl.Rect{0, int16(surf.H/2 - 12), 0, 0},
+	surf.Blit(&sdl.Rect{0, int16(surf.H/2 - 12 + 50), 0, 0},
 		bgSurf, nil)
 	DrawTextBig(a.Text(), int(surf.W/2 - 100),
-		int(surf.H/2 - 10), surf)
+		int(surf.H/2 - 10 + 50), surf)
 }
 
 type QuitUserAction struct {
