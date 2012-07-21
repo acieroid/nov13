@@ -144,6 +144,9 @@ func (m *MoveMenu) Contains(x, y int) bool {
 func (m *MoveMenu) Clicked(x, y int) Menu {
 	dx := 0
 	dy := 0
+	if m.c.Contains(x, y) {
+		return m
+	}
 	if x > m.c.x - 3*TILESIZE/2 && x < m.c.x - TILESIZE/2 {
 		dx = -1
 	}
