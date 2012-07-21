@@ -93,7 +93,6 @@ func main() {
 
 	for true {
 		screen.FillRect(nil, 0x000000)
-		delta = int(time.Since(lastUpdate)/1e6)
 
 		switch mode {
 		case MENU:
@@ -107,6 +106,7 @@ func main() {
 			return
 		}
 
+		delta = int(time.Since(lastUpdate)/1e6)
 		DrawMessages(delta, screen)
 
 
