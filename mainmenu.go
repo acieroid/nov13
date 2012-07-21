@@ -7,10 +7,12 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 type MainMenu struct {
-	maps *ring.Ring /* TODO: use a ring */
+	maps *ring.Ring
+	lastModif time.Time
 	w, h int
 }
 
@@ -40,7 +42,7 @@ func NewMainMenu(mapDir string, w, h int) (m *MainMenu) {
 			}
 		}
 	}
-	return &MainMenu{maps, w, h}
+	return &MainMenu{maps, time.Now(), w, h}
 }
 
 func (m *MainMenu) Run(screen *sdl.Surface) (string, int) {
@@ -49,14 +51,19 @@ func (m *MainMenu) Run(screen *sdl.Surface) (string, int) {
 		switch reflect.TypeOf(ev) {
 		case reflect.TypeOf(sdl.QuitEvent{}):
 			return "", QUIT
-
 		case reflect.TypeOf(sdl.KeyboardEvent{}):
 			e := ev.(sdl.KeyboardEvent)
 			switch e.Keysym.Sym {
 			case sdl.K_LEFT:
-				m.maps = m.maps.Move(1)
+				if int(time.Since(m.lastModif)) > 250e6 {
+					m.maps = m.maps.Move(1)
+					m.lastModif = time.Now()
+				}
 			case sdl.K_RIGHT:
-				m.maps = m.maps.Move(-1)
+				if int(time.Since(m.lastModif)) > 250e6 {
+					m.maps = m.maps.Move(-1)
+					m.lastModif = time.Now()
+				}
 			case sdl.K_RETURN:
 				return m.maps.Value.(string), GAME
 			}

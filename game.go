@@ -48,7 +48,10 @@ func (g *Game) Run(screen *sdl.Surface) int {
 			case sdl.K_DOWN:
 				g.scrollY = Min(g.scrollY+SCROLLSTEP, *Height)
 			case sdl.K_ESCAPE:
-				g.menu = nil
+				if g.menu != nil {
+					g.menu = nil
+				}
+				/* TODO: else, propose to quit (w/ some msg like "Press ESC again to quit) */
 			}
 		case reflect.TypeOf(sdl.MouseButtonEvent{}):
 			e := ev.(sdl.MouseButtonEvent)
