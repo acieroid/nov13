@@ -90,9 +90,10 @@ func LoadMap(name string) (m *Map, units []*Character) {
 		}
 	}
 	m.images = []*sdl.Surface{
-		LoadImage("img/red.png"),
-		LoadImage("img/green.png"),
-		LoadImage("img/blue.png")}
+		LoadImage("img/grass.png"),
+		LoadImage("img/road.png"),
+		LoadImage("img/forest.png"),
+		LoadImage("img/water.png")}
 	return
 }
 
