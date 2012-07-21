@@ -85,7 +85,8 @@ func (m *AttackMenu) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 	/* this sucks in SDL binding, we should use a multiple value return */
 	sdl.GetMouseState(&x, &y)
 	s := m.green
-	if Square(x - m.c.x) + Square(y - m.c.y) > Square(m.c.damageRange) {
+	if Square(x - m.c.x) + Square(y - m.c.y) > Square(m.c.damageRange) ||
+		/* TODO: red if outside map */
 		s = m.red
 	}
 	DrawImage(x - m.c.damageSize/2, y - m.c.damageSize/2, s, surf)

@@ -50,8 +50,10 @@ func (g *Game) Run(screen *sdl.Surface) int {
 			case sdl.K_ESCAPE:
 				if g.menu != nil {
 					g.menu = nil
+				} else {
+					return QUIT /* TODO: for development only */
+					/* TODO: else, propose to quit (w/ some msg like "Press ESC again to quit) */
 				}
-				/* TODO: else, propose to quit (w/ some msg like "Press ESC again to quit) */
 			}
 		case reflect.TypeOf(sdl.MouseButtonEvent{}):
 			e := ev.(sdl.MouseButtonEvent)
@@ -60,7 +62,7 @@ func (g *Game) Run(screen *sdl.Surface) int {
 				y := int(e.Y) + g.scrollY
 				if g.menu != nil && g.menu.Contains(x, y) {
 					g.menu = g.menu.Clicked(x, y)
-				} else if g.mode == GAME && g.watchButton.Contains(x, y) {
+				} else if g.mode == GAME && g.watchButton.Contains(int(e.X), int(e.Y)) {
 					AddMessage("Début du tour")
 					g.mode = WATCH
 					g.menu = nil

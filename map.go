@@ -11,8 +11,9 @@ import (
 
 const (
 	GRASS = 1
-	FOREST = 2
-	WATER = 3
+	ROAD = 2
+	FOREST = 3
+	WATER = 4
 	TILESIZE = 32
 )
 	
@@ -130,8 +131,8 @@ func (m *Map) TileAt(x, y int) int {
 func (m *Map) CanMove(c *Character, dx, dy int) bool {
 	x := c.x + dx
 	y := c.y + dy
-	if x - TILESIZE/2 < 0 || x + TILESIZE/2 > m.width ||
-		y - TILESIZE/2 < 0 || y + TILESIZE/2 > m.height {
+	if x - TILESIZE/2 < 0 || x + TILESIZE/2 > m.width*TILESIZE ||
+		y - TILESIZE/2 < 0 || y + TILESIZE/2 > m.height*TILESIZE {
 		return false
 	}
 	tile := m.TileAt(x, y)
