@@ -43,7 +43,7 @@ func (g *Game) Run(screen *sdl.Surface) int {
 		case reflect.TypeOf(sdl.KeyboardEvent{}):
 			e := ev.(sdl.KeyboardEvent)
 			if g.userAction != nil &&
-				int(time.Since(g.lastKey)) > 250e6 {
+				int(time.Since(g.lastKey)/1e6) > 250 {
 				quit := g.userAction.KeyPress(e.Keysym.Sym)
 				g.userAction = nil
 				if quit {
@@ -61,13 +61,13 @@ func (g *Game) Run(screen *sdl.Surface) int {
 			case sdl.K_DOWN:
 				g.scrollY = Min(g.scrollY+SCROLLSTEP, *Height)
 			case sdl.K_ESCAPE:
-				if g.userAction == nil {
+				if g.userAction == nil && int(time.Since(g.lastKey)/1e6) > 250 {
 					if g.menu != nil {
 						g.menu = nil
 					} else {
 						g.userAction = NewQuitUserAction()
-						g.lastKey = time.Now()
 					}
+					g.lastKey = time.Now()
 				}
 			}
 		case reflect.TypeOf(sdl.MouseButtonEvent{}):

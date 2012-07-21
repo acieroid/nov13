@@ -55,19 +55,19 @@ func (m *MainMenu) Run(screen *sdl.Surface) (string, int) {
 			e := ev.(sdl.KeyboardEvent)
 			switch e.Keysym.Sym {
 			case sdl.K_LEFT:
-				if int(time.Since(m.lastModif)) > 250e6 {
+				if int(time.Since(m.lastModif)/1e6) > 250 {
 					m.maps = m.maps.Move(1)
 					m.lastModif = time.Now()
 				}
 			case sdl.K_RIGHT:
-				if int(time.Since(m.lastModif)) > 250e6 {
+				if int(time.Since(m.lastModif)/1e6) > 250 {
 					m.maps = m.maps.Move(-1)
 					m.lastModif = time.Now()
 				}
 			case sdl.K_RETURN:
 				return m.maps.Value.(string), GAME
 			case sdl.K_ESCAPE:
-				if int(time.Since(m.lastModif)) > 250e6 {
+				if int(time.Since(m.lastModif)/1e6) > 250 {
 					return "", QUIT
 				}
 			}
