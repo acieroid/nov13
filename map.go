@@ -136,11 +136,13 @@ func (m *Map) CanMove(c *Character, dx, dy int) bool {
 	right := x + TILESIZE/2
 	top := y - TILESIZE/2
 	bottom := y + TILESIZE/2
+	/* still in the map ? */
 	if left < 0 || right > m.width*TILESIZE ||
 		top < 0 || bottom > m.height*TILESIZE {
 		return false
 	}
 
+	/* can go on this case ? */
 	if c.Type == BOAT {
 		return m.TileAt(left, top) == WATER &&
 			m.TileAt(right, top) == WATER &&

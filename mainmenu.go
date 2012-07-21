@@ -29,7 +29,7 @@ func NewMainMenu(mapDir string, w, h int) (m *MainMenu) {
 	}
 
 	var maps *ring.Ring
-	for _, fi := range(fis) {
+	for _, fi := range fis {
 		if strings.HasSuffix(fi.Name(), ".txt") {
 			name := fi.Name()
 			mapName := name[:len(name)-4]

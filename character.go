@@ -104,8 +104,8 @@ func (c *Character) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 }
 
 func (c *Character) Contains(x, y int) bool {
-	return (x > c.x - TILESIZE/2 && x < c.x + TILESIZE/2 &&
-		y > c.y - TILESIZE/2 && y < c.y + TILESIZE/2)
+	return (x >= c.x - TILESIZE/2 && x <= c.x + TILESIZE/2 &&
+		y >= c.y - TILESIZE/2 && y <= c.y + TILESIZE/2)
 }
 
 func (c *Character) Alive() bool {

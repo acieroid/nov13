@@ -69,7 +69,7 @@ func (g *Game) Run(screen *sdl.Surface) int {
 					g.watchButton.Enabled()
 					g.lastWatchUpdate = time.Now()
 				} else if g.mode == GAME && x < g.m.width * TILESIZE && y < g.m.height * TILESIZE {
-					for _, unit := range(g.units) {
+					for _, unit := range g.units {
 						if unit.Contains(x, y) && unit.team == 1 {
 							g.menu = NewCharacterMenu(unit)
 							break
@@ -85,11 +85,11 @@ func (g *Game) Run(screen *sdl.Surface) int {
 			AddMessage("Fin du tour")
 			g.mode = GAME
 			g.watchButton.Disabled()
-			for _, unit := range(g.units) {
+			for _, unit := range g.units {
 				unit.nextAction = nil
 			}
 		} else {
-			for _, unit := range(g.units) {
+			for _, unit := range g.units {
 				if unit.nextAction != nil {
 					unit.nextAction.Apply(unit,
 						g.units,
@@ -103,7 +103,7 @@ func (g *Game) Run(screen *sdl.Surface) int {
 
 
 	g.m.Draw(g.scrollX, g.scrollY, screen)
-	for _, unit := range(g.units) {
+	for _, unit := range g.units {
 		unit.Draw(g.scrollX, g.scrollY, screen)
 	}
 	if g.menu != nil {
