@@ -21,8 +21,8 @@ func DrawUserAction(a UserAction, surf *sdl.Surface) {
 	}
 	surf.Blit(&sdl.Rect{0, int16(surf.H/2 - 12 + 50), 0, 0},
 		bgSurf, nil)
-	DrawTextBig(a.Text(), int(surf.W/2 - 100),
-		int(surf.H/2 - 10 + 50), surf)
+	DrawTextBig(a.Text(), int(surf.W/2),
+		int(surf.H/2 + 50), true, surf)
 }
 
 type QuitUserAction struct {

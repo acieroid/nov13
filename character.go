@@ -98,12 +98,12 @@ func (c *Character) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 	DrawText(fmt.Sprintf("%d/%d", c.life, c.maxLife),
 		c.x - TILESIZE/2 - scrollX,
 		c.y - TILESIZE/2 - scrollY,
-		surf)
+		false, surf)
 	if c.team == 1 && c.nextAction != nil {
 		DrawText(c.nextAction.Name(),
 			c.x - TILESIZE/2 - scrollX,
 			c.y - TILESIZE/2 - scrollY + 14,
-			surf)
+			false, surf)
 	}
 }
 

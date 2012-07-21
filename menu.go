@@ -22,19 +22,19 @@ func (m *CharacterMenu) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 	DrawText("Attaquer",
 		m.c.x + TILESIZE/2 - scrollX,
 		m.c.y - TILESIZE/2 - scrollY,
-		surf)
+		false, surf)
 	DrawText("Déplacer",
 		m.c.x + TILESIZE/2 - scrollX,
 		m.c.y - TILESIZE/2 + 14 - scrollY,
-		surf)
+		false, surf)
 	DrawText("Attendre",
 		m.c.x + TILESIZE/2 - scrollX,
 		m.c.y - TILESIZE/2 + 28 - scrollY,
-		surf)
+		false, surf)
 	DrawText("Retour",
 		m.c.x + TILESIZE/2 - scrollX,
 		m.c.y - TILESIZE/2 + 42 - scrollY,
-		surf)
+		false, surf)
 }
 
 func (m *CharacterMenu) Contains(x, y int) bool {

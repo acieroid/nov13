@@ -75,9 +75,8 @@ func (m *MainMenu) Run(screen *sdl.Surface) (string, int) {
 	}
 
 	DrawTextBig(fmt.Sprintf("< Map: %s >", m.maps.Value.(string)),
-		/* TODO: use font metrics, again. */
-		m.w/2 - 100, m.h/2 - 10,
-		screen)
+		m.w/2, m.h/2,
+		true, screen)
 
 	return "", MENU
 }

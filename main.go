@@ -20,7 +20,7 @@ const (
 var Font *ttf.Font
 var BigFont *ttf.Font
 var MapDir = flag.String("maps", "maps", "Map directory")
-var Width = flag.Int("width", 640, "Width of the window")
+var Width = flag.Int("width", 800, "Width of the window")
 var Height = flag.Int("height", 480, "Height of the window")
 var Fullscreen = flag.Bool("fullscreen", false, "Fullscreen")
 
@@ -78,7 +78,7 @@ func main() {
 
 	Font = LoadFont("font.ttf", 12)
 	defer Font.Close()
-	BigFont = LoadFont("font.ttf", 20)
+	BigFont = LoadFont("font.ttf", 16)
 	defer BigFont.Close()
 
 	var game *Game
@@ -121,15 +121,25 @@ func main() {
 
 }
 
-func DrawText(text string, x, y int, surf *sdl.Surface) {
-	surf.Blit(&sdl.Rect{int16(x), int16(y), 0, 0},
+func DrawText(text string, x, y int, center bool, surf *sdl.Surface) {
+	var w int
+	var h int
+	if center {
+		w, h, _ = Font.SizeText(text)
+	}
+	surf.Blit(&sdl.Rect{int16(x - w/2), int16(y - h/2), 0, 0},
 		ttf.RenderUTF8_Solid(Font, text, sdl.Color{0, 0, 0, 0}),
 		nil)
 }
 
-func DrawTextBig(text string, x, y int, surf *sdl.Surface) {
-	surf.Blit(&sdl.Rect{int16(x) /* TODO: font metrics */,
-		int16(y), 0, 0},
+func DrawTextBig(text string, x, y int, center bool, surf *sdl.Surface) {
+	var w int
+	var h int
+	if center {
+		w, h, _ = Font.SizeText(text)
+	}
+	surf.Blit(&sdl.Rect{int16(x - w/2),
+		int16(y - h/2), 0, 0},
 		ttf.RenderUTF8_Solid(BigFont, text, sdl.Color{255, 255, 255, 0}),
 		nil)
 }

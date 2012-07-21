@@ -60,6 +60,8 @@ func (g *Game) Run(screen *sdl.Surface) int {
 				g.scrollY = Max(g.scrollY-SCROLLSTEP, 0)
 			case sdl.K_DOWN:
 				g.scrollY = Min(g.scrollY+SCROLLSTEP, *Height)
+			case sdl.K_n:
+				g.ScrollToNext()
 			case sdl.K_ESCAPE:
 				if g.userAction == nil && int(time.Since(g.lastKey)/1e6) > 250 {
 					if g.menu != nil {
@@ -168,4 +170,26 @@ func (g *Game) AllUnitsGood() bool {
 		}
 	}
 	return true
+}
+
+func (g *Game) ScrollToNext() {
+	var (
+		x int
+		y int
+		found bool
+	)
+	for _, unit := range g.units {
+		if unit.team == 1 && unit.Alive() && unit.nextAction == nil {
+			x = unit.x
+			y = unit.y
+			found = true
+		}
+	}
+
+	if !found {
+		return
+	}
+
+	g.scrollX = Max(0, x - *Width/2)
+	g.scrollY = Max(0, y - *Height/2)
 }

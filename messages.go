@@ -53,8 +53,8 @@ func getMessageToDraw(delta int) (string, bool) {
 func DrawMessages(delta int, surf *sdl.Surface) {
 	message, has := getMessageToDraw(delta)
 	if has {
-		surf.Blit(&sdl.Rect{0, int16(Mgr.h/2 - 12), 0, 0},
+		surf.Blit(&sdl.Rect{0, int16(surf.H/2 - 12), 0, 0},
 			Mgr.bg, nil)
-		DrawTextBig(message, Mgr.w/2 - 100, Mgr.h/2 - 10, surf)
+		DrawTextBig(message, int(surf.W/2), int(surf.H/2), true, surf)
 	}
 }
