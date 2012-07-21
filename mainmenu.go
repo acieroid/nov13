@@ -67,7 +67,9 @@ func (m *MainMenu) Run(screen *sdl.Surface) (string, int) {
 			case sdl.K_RETURN:
 				return m.maps.Value.(string), GAME
 			case sdl.K_ESCAPE:
-				return "", QUIT
+				if int(time.Since(m.lastModif)) > 250e6 {
+					return "", QUIT
+				}
 			}
 		}
 	}

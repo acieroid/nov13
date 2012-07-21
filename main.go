@@ -102,6 +102,10 @@ func main() {
 			}
 		case GAME:
 			mode = game.Run(screen)
+			if mode == MENU {
+				/* Recreate the menu to avoid quitting when esc is still pressed */
+				menu = NewMainMenu(*MapDir, *Width, *Height)
+			}
 		case QUIT:
 			return
 		}

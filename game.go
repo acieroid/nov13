@@ -65,7 +65,7 @@ func (g *Game) Run(screen *sdl.Surface) int {
 					if g.menu != nil {
 						g.menu = nil
 					} else {
-						g.userAction = NewQuitUserAction(g)
+						g.userAction = NewQuitUserAction()
 						g.lastKey = time.Now()
 					}
 				}
@@ -105,8 +105,20 @@ func (g *Game) Run(screen *sdl.Surface) int {
 			AddMessage("Fin du tour")
 			g.mode = GAME
 			g.watchButton.Disabled()
+			myUnits := 0
+			ennemyUnits := 0
 			for _, unit := range g.units {
+				if unit.team == 1 && unit.Alive() {
+					myUnits += 1
+				} else if unit.team == 2 && unit.Alive() {
+					ennemyUnits += 1
+				}
 				unit.nextAction = nil
+			}
+			if myUnits == 0 {
+				g.userAction = NewEOGUserAction(false)
+			} else if ennemyUnits == 0 {
+				g.userAction = NewEOGUserAction(true)
 			}
 		} else {
 			for _, unit := range g.units {

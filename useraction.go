@@ -26,11 +26,10 @@ func DrawUserAction(a UserAction, surf *sdl.Surface) {
 }
 
 type QuitUserAction struct {
-	g *Game
 }
 
-func NewQuitUserAction(g *Game) *QuitUserAction {
-	return &QuitUserAction{g}
+func NewQuitUserAction() *QuitUserAction {
+	return &QuitUserAction{}
 }
 
 func (a *QuitUserAction) KeyPress(sym uint32) bool {
@@ -39,4 +38,23 @@ func (a *QuitUserAction) KeyPress(sym uint32) bool {
 
 func (a *QuitUserAction) Text() string {
 	return "Appuyez (encore) sur ESC pour quitter"
+}
+
+type EOGUserAction struct {
+	won bool
+}
+
+func NewEOGUserAction(won bool) *EOGUserAction {
+	return &EOGUserAction{won}
+}
+
+func (a *EOGUserAction) KeyPress(sym uint32) bool {
+	return sym == sdl.K_ESCAPE
+}
+
+func (a *EOGUserAction) Text() string {
+	if a.won {
+		return "Vous avez gagné, appuyez sur ESC pour revenir au menu"
+	}
+	return "Vous avez perdu, appuyez sur ESC pour revenir au menu"
 }
