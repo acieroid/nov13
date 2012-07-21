@@ -9,8 +9,13 @@ import (
 	"fmt"
 )
 
-var TILESIZE int = 32
-
+const (
+	GRASS = 1
+	FOREST = 2
+	WATER = 3
+	TILESIZE = 32
+)
+	
 type Map struct {
 	width, height int
 	contents [][]int
@@ -116,4 +121,25 @@ func (m *Map) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 				m.images[m.contents[x][y]-1], nil)
 		}
 	}
+}
+
+func (m *Map) TileAt(x, y int) int {
+	return m.contents[x/TILESIZE][y/TILESIZE]
+}
+
+func (m *Map) CanMove(c *Character, dx, dy int) bool {
+	x := c.x + dx
+	y := c.y + dy
+	if x - TILESIZE/2 < 0 || x + TILESIZE/2 > m.width ||
+		y - TILESIZE/2 < 0 || y + TILESIZE/2 > m.height {
+		return false
+	}
+	tile := m.TileAt(x, y)
+	switch {
+	case tile == WATER && c.Type != BOAT:
+		return false
+	case tile != WATER && c.Type == BOAT:
+		return false
+	}
+	return true
 }

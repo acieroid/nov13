@@ -91,6 +91,7 @@ func (g *Game) Run(screen *sdl.Surface) int {
 				if unit.nextAction != nil {
 					unit.nextAction.Apply(unit,
 						g.units,
+						g.m,
 						int(time.Since(g.lastWatchUpdate)/1e7))
 				}
 			}

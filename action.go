@@ -5,7 +5,7 @@ import (
 )
 
 type Action interface {
-	Apply(c *Character, units []*Character, delta int)
+	Apply(c *Character, units []*Character, m *Map, delta int)
 	Name() string
 }
 
@@ -17,11 +17,13 @@ func NewMoveAction(dx, dy int) *MoveAction {
 	return &MoveAction{dx, dy}
 }
 
-func (a *MoveAction) Apply(c *Character, units []*Character, delta int) {
+func (a *MoveAction) Apply(c *Character, units []*Character, m *Map, delta int) {
 	dx := (a.dirX * delta * c.moveSpeed)/10
 	dy := (a.dirY * delta * c.moveSpeed)/10
-	c.x += dx
-	c.y += dy
+	if m.CanMove(c, dx, dy) {
+		c.x += dx
+		c.y += dy
+	}
 }
 
 func (a *MoveAction) Name() string {
@@ -37,7 +39,7 @@ func NewAttackAction(x, y, speed int) *AttackAction {
 	return &AttackAction{x, y, speed*10}
 }
 
-func (a *AttackAction) Apply(c *Character, units[]*Character, delta int) {
+func (a *AttackAction) Apply(c *Character, units[]*Character, m *Map, delta int) {
 	a.nextAttack -= delta
 	if a.nextAttack < 0 {
 		a.nextAttack += c.attackSpeed*10
@@ -77,7 +79,7 @@ func NewWaitAction() *WaitAction {
 	return &WaitAction{}
 }
 
-func (a *WaitAction) Apply(c *Character, units[]*Character, delta int) {
+func (a *WaitAction) Apply(c *Character, units[]*Character, m *Map, delta int) {
 	/* Do nothing */
 }
 
