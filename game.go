@@ -14,6 +14,8 @@ type Game struct {
 	watchButton *WatchButton
 	lastUpdate, lastWatchUpdate time.Time
 	menu Menu
+	userAction UserAction
+	lastKey time.Time
 }
 
 func NewGame(mapName string, w, h int) (g *Game) {
@@ -26,6 +28,8 @@ func NewGame(mapName string, w, h int) (g *Game) {
 	g.watchButton = NewWatchButton(w-100, h-30)
 	g.lastUpdate = time.Now()
 	g.lastWatchUpdate = time.Now()
+	g.userAction = nil
+	g.lastKey = time.Now()
 	return
 }
 
@@ -38,6 +42,15 @@ func (g *Game) Run(screen *sdl.Surface) int {
 			return QUIT
 		case reflect.TypeOf(sdl.KeyboardEvent{}):
 			e := ev.(sdl.KeyboardEvent)
+			if g.userAction != nil &&
+				int(time.Since(g.lastKey)) > 250e6 {
+				quit := g.userAction.KeyPress(e.Keysym.Sym)
+				g.userAction = nil
+				if quit {
+					return MENU
+				}
+				g.lastKey = time.Now()
+			}
 			switch e.Keysym.Sym {
 			case sdl.K_LEFT:
 				g.scrollX = Max(g.scrollX-SCROLLSTEP, 0)
@@ -48,14 +61,20 @@ func (g *Game) Run(screen *sdl.Surface) int {
 			case sdl.K_DOWN:
 				g.scrollY = Min(g.scrollY+SCROLLSTEP, *Height)
 			case sdl.K_ESCAPE:
-				if g.menu != nil {
-					g.menu = nil
-				} else {
-					return QUIT /* TODO: for development only */
-					/* TODO: else, propose to quit (w/ some msg like "Press ESC again to quit) */
+				if g.userAction == nil {
+					if g.menu != nil {
+						g.menu = nil
+					} else {
+						g.userAction = NewQuitUserAction(g)
+						g.lastKey = time.Now()
+					}
 				}
 			}
 		case reflect.TypeOf(sdl.MouseButtonEvent{}):
+			if g.userAction != nil {
+				break
+			}
+
 			e := ev.(sdl.MouseButtonEvent)
 			if e.Type == sdl.MOUSEBUTTONDOWN && e.Button == 1 {
 				x := int(e.X) + g.scrollX
@@ -80,6 +99,7 @@ func (g *Game) Run(screen *sdl.Surface) int {
 		}
 	default:
 	}
+
 	if g.mode == WATCH {
 		if g.watchButton.WatchFinished() {
 			AddMessage("Fin du tour")
@@ -108,6 +128,9 @@ func (g *Game) Run(screen *sdl.Surface) int {
 	}
 	if g.menu != nil {
 		g.menu.Draw(g.scrollX, g.scrollY, screen)
+	}
+	if g.userAction != nil {
+		DrawUserAction(g.userAction, screen)
 	}
 	g.watchButton.Draw(screen)
 	return GAME
