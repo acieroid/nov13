@@ -83,11 +83,11 @@ func (g *Game) Run(screen *sdl.Surface) int {
 					g.menu = g.menu.Clicked(x, y)
 				} else if g.watchButton.Contains(int(e.X), int(e.Y)) {
 					if g.mode == GAME {
-						AddMessage("Début du tour")
-						g.mode = WATCH
-						g.menu = nil
-						g.watchButton.Enabled()
-						g.lastWatchUpdate = time.Now()
+						if g.AllUnitsGood() {
+							g.StartWatch()
+						} else {
+							g.userAction = NewWatchUserAction(g)
+						}
 					} else {
 						AddMessage("Fin du tour")
 						g.watchButton.Finish()
@@ -151,4 +151,21 @@ func (g *Game) Run(screen *sdl.Surface) int {
 	}
 	g.watchButton.Draw(screen)
 	return GAME
+}
+
+func (g *Game) StartWatch() {
+	AddMessage("Début du tour")
+	g.mode = WATCH
+	g.menu = nil
+	g.watchButton.Enabled()
+	g.lastWatchUpdate = time.Now()
+}
+
+func (g *Game) AllUnitsGood() bool {
+	for _, unit := range g.units {
+		if unit.Alive() && unit.team == 1 && unit.nextAction == nil {
+			return false
+		}
+	}
+	return true
 }

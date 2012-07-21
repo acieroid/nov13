@@ -58,3 +58,22 @@ func (a *EOGUserAction) Text() string {
 	}
 	return "Vous avez perdu, appuyez sur ESC pour revenir au menu"
 }
+
+type WatchUserAction struct {
+	g *Game
+}
+
+func NewWatchUserAction(g *Game) *WatchUserAction {
+	return &WatchUserAction{g}
+}
+
+func (a *WatchUserAction) KeyPress(sym uint32) bool {
+	if sym == sdl.K_RETURN {
+		a.g.StartWatch()
+	}
+	return false
+}
+
+func (a *WatchUserAction) Text() string {
+	return "Certaines unités n'ont pas d'action assignée, appuyez sur ENTER pour continuer"
+}
