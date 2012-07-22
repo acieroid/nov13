@@ -85,7 +85,7 @@ func (m *AttackMenu) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 	/* this sucks in SDL binding, we should use a multiple value return */
 	sdl.GetMouseState(&x, &y)
 	s := m.green
-	if Square(x - m.c.x) + Square(y - m.c.y) > Square(m.c.damageRange) {
+	if Square(x + scrollX - m.c.x) + Square(y + scrollY- m.c.y) > Square(m.c.damageRange) {
 		/* TODO: red if outside map */
 		s = m.red
 	}
@@ -100,8 +100,9 @@ func (m *AttackMenu) Contains(x, y int) bool {
 func (m *AttackMenu) Clicked(x, y int) Menu {
 	if Square(x - m.c.x) + Square(y-m.c.y) < Square(m.c.damageRange) {
 		m.c.nextAction = NewAttackAction(x, y, m.c.attackSpeed)
+		return nil
 	}
-	return nil
+	return m
 }
 
 type MoveMenu struct {

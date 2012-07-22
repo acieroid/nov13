@@ -6,6 +6,8 @@ import (
 	"github.com/0xe2-0x9a-0x9b/Go-SDL/gfx"
 	"flag"
 	"time"
+	"os"
+	"runtime/pprof"
 )
 
 const (
@@ -23,6 +25,7 @@ var MapDir = flag.String("maps", "maps", "Map directory")
 var Width = flag.Int("width", 800, "Width of the window")
 var Height = flag.Int("height", 480, "Height of the window")
 var Fullscreen = flag.Bool("fullscreen", false, "Fullscreen")
+var CPUProfile = flag.String("cpuprofile", "", "Write CPU Profile to file")
 
 func Max(x, y int) int {
 	if x > y {
@@ -56,6 +59,16 @@ func LoadFont(name string, size int) *ttf.Font {
 
 func main() {
 	flag.Parse()
+
+	if *CPUProfile != "" {
+		f, err := os.Create(*CPUProfile)
+		if err != nil {
+			panic(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
 	if sdl.Init(sdl.INIT_VIDEO) != 0 || ttf.Init() != 0 {
 		panic(sdl.GetError())
 	}

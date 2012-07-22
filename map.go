@@ -21,6 +21,7 @@ type Map struct {
 	width, height int
 	contents [][]int
 	images []*sdl.Surface
+	surf *sdl.Surface
 }
 
 func LoadMap(name string) (m *Map, units []*Character) {
@@ -89,40 +90,35 @@ func LoadMap(name string) (m *Map, units []*Character) {
 			units[i] = NewBoat(team, x, y)
 		}
 	}
+
 	m.images = []*sdl.Surface{
 		LoadImage("img/grass.png"),
 		LoadImage("img/road.png"),
 		LoadImage("img/forest.png"),
 		LoadImage("img/water.png")}
-	return
-}
 
-/* TODO */
-func (m *Map) Surface() (surf *sdl.Surface) {
-	surf = &sdl.Surface{}
+	m.surf = sdl.CreateRGBSurface(sdl.HWSURFACE,
+		m.width*TILESIZE, m.height*TILESIZE,
+		32, 0, 0, 0, 0)
 	for x := 0; x < m.width; x++ {
 		for y := 0; y < m.height; y++ {
-			surf.Blit(&sdl.Rect{
+			m.surf.Blit(&sdl.Rect{
 				int16(x * TILESIZE),
 				int16(y * TILESIZE),
 				0, 0},
 				m.images[m.contents[x][y]-1], nil)
 		}
 	}
+
 	return
 }
 
 func (m *Map) Draw(scrollX, scrollY int, surf *sdl.Surface) {
-	/* TODO: use Surface instead of this draw function */
-	for x := 0; x < m.width; x++ {
-		for y := 0; y < m.height; y++ {
-			surf.Blit(&sdl.Rect{
-				int16(x * TILESIZE - scrollX),
-				int16(y * TILESIZE - scrollY),
-				0, 0},
-				m.images[m.contents[x][y]-1], nil)
-		}
-	}
+	surf.Blit(&sdl.Rect{
+		int16(-scrollX),
+		int16(-scrollY),
+		0, 0},
+		m.surf, nil)
 }
 
 func (m *Map) TileAt(x, y int) int {
