@@ -18,6 +18,9 @@ func NewMoveAction(dx, dy int) *MoveAction {
 }
 
 func (a *MoveAction) Apply(c *Character, units []*Character, m *Map, delta int) {
+	if !c.Alive() {
+		return
+	}
 	moveSpeed := c.moveSpeed
 	switch m.TileAt(c.x, c.y) {
 	case FOREST:
@@ -59,6 +62,9 @@ func NewAttackAction(x, y, speed int) *AttackAction {
 }
 
 func (a *AttackAction) Apply(c *Character, units[]*Character, m *Map, delta int) {
+	if !c.Alive() {
+		return
+	}
 	a.nextAttack -= delta
 	if a.nextAttack < 0 {
 		a.nextAttack += (10-c.attackSpeed)*10

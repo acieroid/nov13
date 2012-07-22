@@ -133,8 +133,8 @@ func (m *Map) CanMove(c *Character, dx, dy int) bool {
 	top := y - CHARACTERSIZE/2
 	bottom := y + CHARACTERSIZE/2
 	/* still in the map ? */
-	if left < 0 || right > m.width*TILESIZE ||
-		top < 0 || bottom > m.height*TILESIZE {
+	if left < 0 || right >= m.width*TILESIZE ||
+		top < 0 || bottom >= m.height*TILESIZE {
 		return false
 	}
 
