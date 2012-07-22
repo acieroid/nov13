@@ -28,7 +28,7 @@ func InitMessages(width, height int) {
 }
 
 func AddMessage(message string) {
-	AddMessageWithDuration(message, 500)
+	AddMessageWithDuration(message, 150)
 }
 
 func AddMessageWithDuration(message string, msDuration int) {
