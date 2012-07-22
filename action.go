@@ -18,8 +18,15 @@ func NewMoveAction(dx, dy int) *MoveAction {
 }
 
 func (a *MoveAction) Apply(c *Character, units []*Character, m *Map, delta int) {
-	dx := (a.dirX * delta * c.moveSpeed)/10
-	dy := (a.dirY * delta * c.moveSpeed)/10
+	moveSpeed := c.moveSpeed
+	switch m.TileAt(c.x, c.y) {
+	case FOREST:
+		moveSpeed += c.forestBonus
+	case ROAD:
+		moveSpeed += c.roadBonus
+	}
+	dx := (a.dirX * Max(10, delta * moveSpeed))/10
+	dy := (a.dirY * Max(10, delta * moveSpeed))/10
 	left := c.x + dx - CHARACTERSIZE/2
 	right := c.x + dx + CHARACTERSIZE/2
 	top := c.y + dy - CHARACTERSIZE/2
@@ -61,7 +68,7 @@ func (a *AttackAction) Apply(c *Character, units[]*Character, m *Map, delta int)
 			left := a.x - c.damageSize/2
 			right := a.x + c.damageSize/2
 			rect := Rect{top, left, bottom, right}
-			if unit.Alive() && unit.team == 2 &&
+			if unit.Alive() && unit.team != c.team &&
 				rect.Contains(unit) {
 				damage := Min(unit.life, c.damage)
 				unit.life -= damage

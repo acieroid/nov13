@@ -152,6 +152,7 @@ func (g *Game) Run(screen *sdl.Surface) int {
 }
 
 func (g *Game) StartWatch() {
+	RunAI(g.units, g.m)
 	AddMessage("Début du tour")
 	g.mode = WATCH
 	g.menu = nil

@@ -13,6 +13,7 @@ const (
 type Character struct {
 	team int
 	moveSpeed, attackSpeed int
+	forestBonus, roadBonus int
 	life, maxLife int
 	damage, damageSize, damageRange int
 	x, y int
@@ -35,13 +36,17 @@ const (
 
 const (
 	WMOVESPEED = 5
-	WATTACKSPEED = 2
+	WATTACKSPEED = 3
+	WFORESTBONUS = -2
+	WROADBONUS = 2
 	WDAMAGESIZE = 30
 	WDAMAGERANGE = 50
 	WDAMAGE = 3
 	WLIFE = 20
-	AMOVESPEED = 7
-	AATTACKSPEED = 3
+	AMOVESPEED = 5
+	AATTACKSPEED = 4
+	AFORESTBONUS = 3
+	AROADBONUS = 0
 	ADAMAGESIZE = 25
 	ADAMAGERANGE = 150
 	ADAMAGE = 2
@@ -54,7 +59,7 @@ const (
 	BLIFE = 30
 )
 
-func NewCharacter(Type, team, ms, as, life, damage, ds, dr, x, y int, img *sdl.Surface) *Character {
+func NewCharacter(Type, team, ms, as, fb, rb, life, damage, ds, dr, x, y int, img *sdl.Surface) *Character {
 	if RedBorder == nil {
 		RedBorder = sdl.CreateRGBSurface(sdl.HWSURFACE,
 			TILESIZE, TILESIZE, 32, 0, 0, 0, 0)
@@ -67,7 +72,7 @@ func NewCharacter(Type, team, ms, as, life, damage, ds, dr, x, y int, img *sdl.S
 			0x0000FF00)
 		GreenBorder.SetAlpha(sdl.SRCALPHA, 100)
 	}
-	return &Character{team, ms, as, life, life, damage, ds, dr, x, y, img, Type, nil}
+	return &Character{team, ms, as, fb, rb, life, life, damage, ds, dr, x, y, img, Type, nil}
 }
 
 func NewWarrior(team, x, y int) *Character {
@@ -75,7 +80,7 @@ func NewWarrior(team, x, y int) *Character {
 		WarriorImage = LoadImage("img/warrior.png")
 	}
 	return NewCharacter(WARRIOR, team,
-		WMOVESPEED, WATTACKSPEED,
+		WMOVESPEED, WATTACKSPEED, WFORESTBONUS, WROADBONUS,
 		WLIFE, WDAMAGE, WDAMAGESIZE, WDAMAGERANGE,
 		x, y,
 		WarriorImage)
@@ -86,7 +91,7 @@ func NewArcher(team, x, y int) *Character {
 		ArcherImage = LoadImage("img/archer.png")
 	}
 	return NewCharacter(ARCHER, team,
-		AMOVESPEED, AATTACKSPEED,
+		AMOVESPEED, AATTACKSPEED, AFORESTBONUS, AROADBONUS,
 		ALIFE, ADAMAGE, ADAMAGESIZE, ADAMAGERANGE,
 		x, y,
 		ArcherImage)
@@ -97,7 +102,7 @@ func NewBoat(team, x, y int) *Character {
 		BoatImage = LoadImage("img/boat.png")
 	}
 	return NewCharacter(BOAT, team,
-		BMOVESPEED, BATTACKSPEED,
+		BMOVESPEED, BATTACKSPEED, 0, 0,
 		BLIFE, BDAMAGE, BDAMAGESIZE, BDAMAGERANGE,
 		x, y,
 		BoatImage)
