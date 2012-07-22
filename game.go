@@ -71,6 +71,19 @@ func (g *Game) Run(screen *sdl.Surface) int {
 					}
 					g.lastKey = time.Now()
 				}
+			case sdl.K_RETURN:
+				if g.userAction == nil && g.menu == nil && int(time.Since(g.lastKey)/1e6) > 250 {
+					if g.mode == GAME {
+						if g.AllUnitsGood() {
+							g.StartWatch()
+						} else {
+							g.userAction = NewWatchUserAction(g)
+						}
+					} else if g.mode == WATCH {
+						g.watchButton.Finish()
+					}
+					g.lastKey = time.Now()
+				}
 			}
 		case reflect.TypeOf(sdl.MouseButtonEvent{}):
 			e := ev.(sdl.MouseButtonEvent)
