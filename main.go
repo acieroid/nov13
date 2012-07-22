@@ -23,7 +23,7 @@ var Font *ttf.Font
 var BigFont *ttf.Font
 var MapDir = flag.String("maps", "maps", "Map directory")
 var Width = flag.Int("width", 800, "Width of the window")
-var Height = flag.Int("height", 480, "Height of the window")
+var Height = flag.Int("height", 600, "Height of the window")
 var Fullscreen = flag.Bool("fullscreen", false, "Fullscreen")
 var CPUProfile = flag.String("cpuprofile", "", "Write CPU Profile to file")
 
