@@ -105,7 +105,7 @@ func (g *Game) Run(screen *sdl.Surface) int {
 					}
 				} else if g.mode == GAME && x < g.m.width * TILESIZE && y < g.m.height * TILESIZE {
 					for _, unit := range g.units {
-						if unit.Contains(x, y) && unit.team == 1 {
+						if unit.Alive() && unit.Contains(x, y) && unit.team == 1 {
 							g.menu = NewCharacterMenu(unit)
 							break
 						}
@@ -138,7 +138,7 @@ func (g *Game) Run(screen *sdl.Surface) int {
 			}
 		} else {
 			for _, unit := range g.units {
-				if unit.nextAction != nil {
+				if unit.Alive() && unit.nextAction != nil {
 					unit.nextAction.Apply(unit,
 						g.units,
 						g.m,

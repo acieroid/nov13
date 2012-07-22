@@ -36,7 +36,7 @@ func (a *MoveAction) Apply(c *Character, units []*Character, m *Map, delta int) 
 	bottom := c.y + dy + CHARACTERSIZE/2
 	/* will not walk on another character ? */
 	for _, unit := range units {
-		if unit != c &&
+		if unit.Alive() && unit != c &&
 			(unit.Contains(left, top) || unit.Contains(right, top) ||
 			unit.Contains(left, bottom) || unit.Contains(right, bottom)) {
 			return

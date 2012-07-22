@@ -2,7 +2,7 @@ package main
 
 func RunAI(units []*Character, m *Map) {
 	for _, unit := range units {
-		if unit.team != 2 {
+		if unit.team != 2 || !unit.Alive() {
 			continue
 		}
 
@@ -38,7 +38,7 @@ func Move(unit *Character, dx, dy int) {
 func NearestEnnemy(unit *Character, units []*Character) (ennemy *Character, dist int) {
 	var d int
 	for _, u := range units {
-		if u.team != unit.team {
+		if u.team != unit.team && unit.Alive() {
 			d = Distance(unit, u)
 			if (d < dist || dist == 0) && d > 0 {
 				dist = d
