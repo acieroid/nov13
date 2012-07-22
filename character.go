@@ -9,7 +9,6 @@ const (
 	CHARACTERSIZE = TILESIZE-8
 )
 
-/* TODO: bonus/malus */
 type Character struct {
 	team int
 	moveSpeed, attackSpeed int
