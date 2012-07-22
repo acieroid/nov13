@@ -73,10 +73,6 @@ func (g *Game) Run(screen *sdl.Surface) int {
 				}
 			}
 		case reflect.TypeOf(sdl.MouseButtonEvent{}):
-			if g.userAction != nil {
-				break
-			}
-
 			e := ev.(sdl.MouseButtonEvent)
 			if e.Type == sdl.MOUSEBUTTONDOWN && e.Button == 1 {
 				x := int(e.X) + g.scrollX

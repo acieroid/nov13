@@ -24,6 +24,8 @@ type Character struct {
 var WarriorImage *sdl.Surface
 var ArcherImage *sdl.Surface
 var BoatImage *sdl.Surface
+var RedBorder *sdl.Surface
+var GreenBorder *sdl.Surface
 
 const (
 	WARRIOR = iota
@@ -52,37 +54,53 @@ const (
 	BLIFE = 30
 )
 
+func NewCharacter(Type, team, ms, as, life, damage, ds, dr, x, y int, img *sdl.Surface) *Character {
+	if RedBorder == nil {
+		RedBorder = sdl.CreateRGBSurface(sdl.HWSURFACE,
+			TILESIZE, TILESIZE, 32, 0, 0, 0, 0)
+		RedBorder.FillRect(&sdl.Rect{0, 0, TILESIZE, TILESIZE},
+			0x00FF0000)
+		RedBorder.SetAlpha(sdl.SRCALPHA, 100)
+		GreenBorder = sdl.CreateRGBSurface(sdl.HWSURFACE,
+			TILESIZE, TILESIZE, 32, 0, 0, 0, 0)
+		GreenBorder.FillRect(&sdl.Rect{0, 0, TILESIZE, TILESIZE},
+			0x0000FF00)
+		GreenBorder.SetAlpha(sdl.SRCALPHA, 100)
+	}
+	return &Character{team, ms, as, life, life, damage, ds, dr, x, y, img, Type, nil}
+}
+
 func NewWarrior(team, x, y int) *Character {
 	if WarriorImage == nil {
 		WarriorImage = LoadImage("img/warrior.png")
 	}
-	return &Character{team,
+	return NewCharacter(WARRIOR, team,
 		WMOVESPEED, WATTACKSPEED,
-		WLIFE, WLIFE, WDAMAGE, WDAMAGESIZE, WDAMAGERANGE,
+		WLIFE, WDAMAGE, WDAMAGESIZE, WDAMAGERANGE,
 		x, y,
-		WarriorImage, WARRIOR, nil}
+		WarriorImage)
 }
 
 func NewArcher(team, x, y int) *Character {
 	if ArcherImage == nil {
 		ArcherImage = LoadImage("img/archer.png")
 	}
-	return &Character{team,
+	return NewCharacter(ARCHER, team,
 		AMOVESPEED, AATTACKSPEED,
-		ALIFE, ALIFE, ADAMAGE, ADAMAGESIZE, ADAMAGERANGE,
+		ALIFE, ADAMAGE, ADAMAGESIZE, ADAMAGERANGE,
 		x, y,
-		ArcherImage, ARCHER, nil}
+		ArcherImage)
 }
 
 func NewBoat(team, x, y int) *Character {
 	if BoatImage == nil {
 		BoatImage = LoadImage("img/boat.png")
 	}
-	return &Character{team,
+	return NewCharacter(BOAT, team,
 		BMOVESPEED, BATTACKSPEED,
-		BLIFE, BLIFE, BDAMAGE, BDAMAGESIZE, BDAMAGERANGE,
+		BLIFE, BDAMAGE, BDAMAGESIZE, BDAMAGERANGE,
 		x, y,
-		BoatImage, BOAT, nil}
+		BoatImage)
 }
 
 
@@ -90,11 +108,16 @@ func (c *Character) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 	if !c.Alive() {
 		return
 	}
-	surf.Blit(&sdl.Rect{
-		int16(c.x - CHARACTERSIZE/2 - scrollX),
-		int16(c.y - CHARACTERSIZE/2 - scrollY),
-		0, 0},
-		c.image, nil)
+	border := RedBorder
+	if c.team == 1 {
+		border = GreenBorder
+	}
+	DrawImage(c.x - TILESIZE/2 - scrollX,
+		c.y - TILESIZE/2 - scrollY,
+		border, surf)
+	DrawImage(c.x - CHARACTERSIZE/2 - scrollX,
+		c.y - CHARACTERSIZE/2 - scrollY,
+		c.image, surf)
 	DrawText(fmt.Sprintf("%d/%d", c.life, c.maxLife),
 		c.x - TILESIZE/2 - scrollX,
 		c.y - TILESIZE/2 - scrollY,
