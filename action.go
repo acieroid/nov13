@@ -48,13 +48,13 @@ type AttackAction struct {
 }
 
 func NewAttackAction(x, y, speed int) *AttackAction {
-	return &AttackAction{x, y, speed*10}
+	return &AttackAction{x, y, (10-speed)*10}
 }
 
 func (a *AttackAction) Apply(c *Character, units[]*Character, m *Map, delta int) {
 	a.nextAttack -= delta
 	if a.nextAttack < 0 {
-		a.nextAttack += c.attackSpeed*10
+		a.nextAttack += (10-c.attackSpeed)*10
 		for _, unit := range units {
 			top := a.y - c.damageSize/2
 			bottom := a.y + c.damageSize/2
