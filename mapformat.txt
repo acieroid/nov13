@@ -1,0 +1,19 @@
+Map have the following format:
+
+    w h
+    map description on h lines
+    n
+    units description on n lines
+
+The map description is a simple drawing of the map in ascii, with:
+    - 1 corresponding to a grass tile
+    - 2 corresponding to a road tile
+    - 3 correspodning to a forest tile
+    - 4 corresponding to a water tile
+
+The description of an unit have the following format:
+    letter team x y
+where:
+    - letter is either W for warrior, A for archer or B for boat
+    - team is either 1 for the player or 2 for the computer
+    - x and y are the coordinates of the unit on the map (starting at 0)
