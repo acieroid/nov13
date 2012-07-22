@@ -60,11 +60,9 @@ func (a *AttackAction) Apply(c *Character, units[]*Character, m *Map, delta int)
 			bottom := a.y + c.damageSize/2
 			left := a.x - c.damageSize/2
 			right := a.x + c.damageSize/2
+			rect := Rect{top, left, bottom, right}
 			if unit.Alive() && unit.team == 2 &&
-				(unit.Contains(left, top) ||
-				unit.Contains(right, top) ||
-				unit.Contains(left, bottom) ||
-				unit.Contains(right, bottom)) {
+				rect.Contains(unit) {
 				damage := Min(unit.life, c.damage)
 				unit.life -= damage
 				if !unit.Alive() {
