@@ -146,16 +146,24 @@ func main() {
 }
 
 func DrawText(text string, x, y int, center bool, win sfml.RenderWindow) {
-	/* TODO: centerize text */
 	Text.SetString(text)
-	Text.SetPosition(float32(x), float32(y))
+	if center {
+		r := Text.LocalBounds()
+		Text.SetPosition(float32(x) - r.Width()/2, float32(y) - r.Height())
+	} else {
+		Text.SetPosition(float32(x), float32(y))
+	}
 	win.DrawTextDefault(Text)
 }
 
 func DrawTextBig(text string, x, y int, center bool, win sfml.RenderWindow) {
-	/* TODO: centerize text */
 	BigText.SetString(text)
-	BigText.SetPosition(float32(x), float32(y))
+	if center {
+		r := BigText.LocalBounds()
+		BigText.SetPosition(float32(x) - r.Width()/2, float32(y) - r.Height())
+	} else {
+		BigText.SetPosition(float32(x), float32(y))
+	}
 	win.DrawTextDefault(BigText)
 }
 
