@@ -72,7 +72,7 @@ func NewAttackMenu(c *Character) *AttackMenu {
 }
 
 func (m *AttackMenu) Draw(scrollX, scrollY int, win sfml.RenderWindow) {
-	x, y := sfml.MousePositionAbsolute()
+	x, y := sfml.MousePosition(win.ToWindow())
 	s := m.green
 	if Square(x + scrollX - m.c.x) + Square(y + scrollY- m.c.y) > Square(m.c.damageRange) {
 		/* TODO: red if outside map */
