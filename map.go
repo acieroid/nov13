@@ -113,7 +113,7 @@ func LoadMap(name string) (m *Map, units []*Character) {
 			sprite = sfml.Sprite{nil}
 		}
 	}
-
+	RenderTexture.Display()
 	m.surf.SetTexture(RenderTexture.Texture(), false)
 	return
 }
