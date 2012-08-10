@@ -20,30 +20,30 @@ func NewCharacterMenu(c *Character) *CharacterMenu {
 
 func (m *CharacterMenu) Draw(scrollX, scrollY int, win sfml.RenderWindow) {
 	DrawText("Attaquer",
-		m.c.x + TILESIZE/2 - scrollX,
-		m.c.y - TILESIZE/2 - scrollY,
+		m.c.x+TILESIZE/2-scrollX,
+		m.c.y-TILESIZE/2-scrollY,
 		false, win)
 	DrawText("Déplacer",
-		m.c.x + TILESIZE/2 - scrollX,
-		m.c.y - TILESIZE/2 + 14 - scrollY,
+		m.c.x+TILESIZE/2-scrollX,
+		m.c.y-TILESIZE/2+14-scrollY,
 		false, win)
 	DrawText("Attendre",
-		m.c.x + TILESIZE/2 - scrollX,
-		m.c.y - TILESIZE/2 + 28 - scrollY,
+		m.c.x+TILESIZE/2-scrollX,
+		m.c.y-TILESIZE/2+28-scrollY,
 		false, win)
 	DrawText("Retour",
-		m.c.x + TILESIZE/2 - scrollX,
-		m.c.y - TILESIZE/2 + 42 - scrollY,
+		m.c.x+TILESIZE/2-scrollX,
+		m.c.y-TILESIZE/2+42-scrollY,
 		false, win)
 }
 
 func (m *CharacterMenu) Contains(x, y int) bool {
-	return (x > m.c.x + TILESIZE/2 && x < m.c.x + TILESIZE/2 + 50 && /* TODO: use font metrics ? */
-		y > m.c.y - TILESIZE/2 && y < m.c.y - TILESIZE/2 + 60)
+	return (x > m.c.x+TILESIZE/2 && x < m.c.x+TILESIZE/2+50 && /* TODO: use font metrics ? */
+		y > m.c.y-TILESIZE/2 && y < m.c.y-TILESIZE/2+60)
 }
 
 func (m *CharacterMenu) Clicked(x, y int) Menu {
-	element := (y - m.c.y + TILESIZE/2)/14
+	element := (y - m.c.y + TILESIZE/2) / 14
 	if element == 0 {
 		return NewAttackMenu(m.c)
 	} else if element == 1 {
@@ -58,7 +58,7 @@ func (m *CharacterMenu) Clicked(x, y int) Menu {
 }
 
 type AttackMenu struct {
-	c *Character
+	c          *Character
 	green, red sfml.RectangleShape
 }
 
@@ -74,11 +74,11 @@ func NewAttackMenu(c *Character) *AttackMenu {
 func (m *AttackMenu) Draw(scrollX, scrollY int, win sfml.RenderWindow) {
 	x, y := sfml.MousePosition(win.ToWindow())
 	s := m.green
-	if Square(x + scrollX - m.c.x) + Square(y + scrollY- m.c.y) > Square(m.c.damageRange) {
+	if Square(x+scrollX-m.c.x)+Square(y+scrollY-m.c.y) > Square(m.c.damageRange) {
 		/* TODO: red if outside map */
 		s = m.red
 	}
-	s.SetPosition(float32(x - m.c.damageSize/2), float32(y - m.c.damageSize/2))
+	s.SetPosition(float32(x-m.c.damageSize/2), float32(y-m.c.damageSize/2))
 	win.DrawRectangleShapeDefault(s)
 }
 
@@ -88,7 +88,7 @@ func (m *AttackMenu) Contains(x, y int) bool {
 }
 
 func (m *AttackMenu) Clicked(x, y int) Menu {
-	if Square(x - m.c.x) + Square(y-m.c.y) < Square(m.c.damageRange) {
+	if Square(x-m.c.x)+Square(y-m.c.y) < Square(m.c.damageRange) {
 		m.c.nextAction = NewAttackAction(x, y, m.c.attackSpeed)
 		return nil
 	}
@@ -115,21 +115,20 @@ func NewMoveMenu(c *Character) (m *MoveMenu) {
 	return &MoveMenu{c}
 }
 
-
 func (m *MoveMenu) Draw(scrollX, scrollY int, win sfml.RenderWindow) {
-	DrawImage(m.c.x - 3*TILESIZE/2 - scrollX, m.c.y - TILESIZE/2 - scrollY, Left, win)
-	DrawImage(m.c.x - 3*TILESIZE/2 - scrollX, m.c.y - 3*TILESIZE/2 - scrollY, TopLeft, win)
-	DrawImage(m.c.x - 3*TILESIZE/2 - scrollX, m.c.y + TILESIZE/2 - scrollY, BottomLeft, win)
-	DrawImage(m.c.x - TILESIZE/2 - scrollX, m.c.y - 3*TILESIZE/2 - scrollY, Up, win)
-	DrawImage(m.c.x - TILESIZE/2 - scrollX, m.c.y + TILESIZE/2 - scrollY, Down, win)
-	DrawImage(m.c.x + TILESIZE/2 - scrollX, m.c.y - 3*TILESIZE/2 - scrollY, TopRight, win)
-	DrawImage(m.c.x + TILESIZE/2 - scrollX, m.c.y - TILESIZE/2 - scrollY, Right, win)
-	DrawImage(m.c.x + TILESIZE/2 - scrollX, m.c.y + TILESIZE/2 - scrollY, BottomRight, win)
+	DrawImage(m.c.x-3*TILESIZE/2-scrollX, m.c.y-TILESIZE/2-scrollY, Left, win)
+	DrawImage(m.c.x-3*TILESIZE/2-scrollX, m.c.y-3*TILESIZE/2-scrollY, TopLeft, win)
+	DrawImage(m.c.x-3*TILESIZE/2-scrollX, m.c.y+TILESIZE/2-scrollY, BottomLeft, win)
+	DrawImage(m.c.x-TILESIZE/2-scrollX, m.c.y-3*TILESIZE/2-scrollY, Up, win)
+	DrawImage(m.c.x-TILESIZE/2-scrollX, m.c.y+TILESIZE/2-scrollY, Down, win)
+	DrawImage(m.c.x+TILESIZE/2-scrollX, m.c.y-3*TILESIZE/2-scrollY, TopRight, win)
+	DrawImage(m.c.x+TILESIZE/2-scrollX, m.c.y-TILESIZE/2-scrollY, Right, win)
+	DrawImage(m.c.x+TILESIZE/2-scrollX, m.c.y+TILESIZE/2-scrollY, BottomRight, win)
 }
 
 func (m *MoveMenu) Contains(x, y int) bool {
-	return (x > m.c.x - 3*TILESIZE/2 && x < m.c.x + 3*TILESIZE/2 &&
-		y > m.c.y - 3*TILESIZE/2 && y < m.c.y + 3*TILESIZE/2)
+	return (x > m.c.x-3*TILESIZE/2 && x < m.c.x+3*TILESIZE/2 &&
+		y > m.c.y-3*TILESIZE/2 && y < m.c.y+3*TILESIZE/2)
 }
 
 func (m *MoveMenu) Clicked(x, y int) Menu {
@@ -138,16 +137,16 @@ func (m *MoveMenu) Clicked(x, y int) Menu {
 	if m.c.Contains(x, y) {
 		return m
 	}
-	if x > m.c.x - 3*TILESIZE/2 && x < m.c.x - TILESIZE/2 {
+	if x > m.c.x-3*TILESIZE/2 && x < m.c.x-TILESIZE/2 {
 		dx = -1
 	}
-	if x > m.c.x + TILESIZE/2 && x < m.c.x + 3*TILESIZE/2 {
+	if x > m.c.x+TILESIZE/2 && x < m.c.x+3*TILESIZE/2 {
 		dx = 1
 	}
-	if y > m.c.y - 3*TILESIZE/2 && y < m.c.y - TILESIZE/2 {
+	if y > m.c.y-3*TILESIZE/2 && y < m.c.y-TILESIZE/2 {
 		dy = -1
 	}
-	if y > m.c.y + TILESIZE/2 && y < m.c.y + 3*TILESIZE/2 {
+	if y > m.c.y+TILESIZE/2 && y < m.c.y+3*TILESIZE/2 {
 		dy = 1
 	}
 	m.c.nextAction = NewMoveAction(dx, dy)

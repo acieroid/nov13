@@ -1,27 +1,27 @@
 package main
 
 import (
-	"github.com/acieroid/go-sfml"
-	"os"
-	"log"
 	"bufio"
-	"strconv"
 	"fmt"
+	"github.com/acieroid/go-sfml"
+	"log"
+	"os"
+	"strconv"
 )
 
 const (
-	GRASS = 1
-	ROAD = 2
-	FOREST = 3
-	WATER = 4
+	GRASS    = 1
+	ROAD     = 2
+	FOREST   = 3
+	WATER    = 4
 	TILESIZE = 32
 )
-	
+
 type Map struct {
 	width, height int
-	contents [][]int
-	images []sfml.Sprite
-	surf sfml.Sprite
+	contents      [][]int
+	images        []sfml.Sprite
+	surf          sfml.Sprite
 }
 
 func LoadMap(name string) (m *Map, units []*Character) {
@@ -37,9 +37,13 @@ func LoadMap(name string) (m *Map, units []*Character) {
 	widthLine, _ := reader.ReadString(' ')
 	heightLine, _ := reader.ReadString('\n')
 	m.width, err = strconv.Atoi(widthLine[:len(widthLine)-1])
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	}
 	m.height, err = strconv.Atoi(heightLine[:len(heightLine)-1])
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	var c byte
 	m.contents = make([][]int, m.width)
@@ -66,7 +70,9 @@ func LoadMap(name string) (m *Map, units []*Character) {
 
 	unitsLine, _ := reader.ReadString('\n')
 	nUnits, err := strconv.Atoi(unitsLine[:len(unitsLine)-1])
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	}
 	units = make([]*Character, nUnits)
 
 	for i := 0; i < nUnits; i++ {
@@ -75,11 +81,17 @@ func LoadMap(name string) (m *Map, units []*Character) {
 		XLine, _ := reader.ReadString(' ')
 		YLine, _ := reader.ReadString('\n')
 		team, err := strconv.Atoi(teamLine[:len(teamLine)-1])
-		if err != nil { log.Fatal(err) }
+		if err != nil {
+			log.Fatal(err)
+		}
 		x, err := strconv.Atoi(XLine[:len(XLine)-1])
-		if err != nil { log.Fatal(err) }
+		if err != nil {
+			log.Fatal(err)
+		}
 		y, err := strconv.Atoi(YLine[:len(YLine)-1])
-		if err != nil { log.Fatal(err) }
+		if err != nil {
+			log.Fatal(err)
+		}
 		x = x*TILESIZE + TILESIZE/2
 		y = y*TILESIZE + TILESIZE/2
 		switch unitType[0] {

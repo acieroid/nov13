@@ -15,11 +15,11 @@ func RunAI(units []*Character, m *Map) {
 		if ennemy != nil {
 			dx := ennemy.x - unit.x
 			if dx != 0 {
-				dx = dx/Abs(dx)
+				dx = dx / Abs(dx)
 			}
 			dy := ennemy.y - unit.y
 			if dy != 0 {
-				dy = dy/Abs(dy)
+				dy = dy / Abs(dy)
 			}
 			Move(unit, dx, dy)
 			continue

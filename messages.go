@@ -23,7 +23,7 @@ func InitMessages(width, height int) {
 	bg := sfml.NewRectangleShape()
 	bg.SetSize(float32(width), 24)
 	bg.SetFillColor(sfml.FromRGBA(0, 255, 0, 150))
-	bg.SetPosition(0, float32(height/2 - 12))
+	bg.SetPosition(0, float32(height/2-12))
 	Mgr = &MessageManager{list.New(), bg, width, height}
 }
 

@@ -6,15 +6,15 @@ import (
 )
 
 type Game struct {
-	scrollX, scrollY int
-	m *Map
-	units []*Character
-	mode int
-	watchButton *WatchButton
+	scrollX, scrollY            int
+	m                           *Map
+	units                       []*Character
+	mode                        int
+	watchButton                 *WatchButton
 	lastUpdate, lastWatchUpdate time.Time
-	menu Menu
-	userAction UserAction
-	lastKey time.Time
+	menu                        Menu
+	userAction                  UserAction
+	lastKey                     time.Time
 }
 
 func NewGame(mapName string, w, h int) (g *Game) {
@@ -92,7 +92,7 @@ func (g *Game) Run(win sfml.RenderWindow) int {
 						AddMessage("Fin du tour")
 						g.watchButton.Finish()
 					}
-				} else if g.mode == GAME && x < g.m.width * TILESIZE && y < g.m.height * TILESIZE {
+				} else if g.mode == GAME && x < g.m.width*TILESIZE && y < g.m.height*TILESIZE {
 					for _, unit := range g.units {
 						if unit.Alive() && unit.Contains(x, y) && unit.team == 1 {
 							g.menu = NewCharacterMenu(unit)
@@ -185,8 +185,8 @@ func (g *Game) AllUnitsGood() bool {
 
 func (g *Game) ScrollToNext() {
 	var (
-		x int
-		y int
+		x     int
+		y     int
 		found bool
 	)
 	for _, unit := range g.units {

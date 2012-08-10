@@ -6,12 +6,12 @@ import (
 )
 
 type WatchButton struct {
-	x, y int
-	enabled bool
-	bg sfml.RectangleShape
+	x, y           int
+	enabled        bool
+	bg             sfml.RectangleShape
 	text, grayText sfml.Text
-	lastStart time.Time
-	finished bool
+	lastStart      time.Time
+	finished       bool
 }
 
 func NewWatchButton(x, y int) *WatchButton {
@@ -52,7 +52,7 @@ func (w *WatchButton) Draw(win sfml.RenderWindow) {
 }
 
 func (w *WatchButton) Contains(x, y int) bool {
-	return x > w.x && x < w.x + 80 && y > w.y && w.y < w.y + 17
+	return x > w.x && x < w.x+80 && y > w.y && w.y < w.y+17
 }
 
 func (w *WatchButton) Enabled() {

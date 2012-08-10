@@ -28,8 +28,8 @@ func (a *MoveAction) Apply(c *Character, units []*Character, m *Map, delta int) 
 	case ROAD:
 		moveSpeed += c.roadBonus
 	}
-	dx := (a.dirX * Max(10, delta * moveSpeed))/10
-	dy := (a.dirY * Max(10, delta * moveSpeed))/10
+	dx := (a.dirX * Max(10, delta*moveSpeed)) / 10
+	dy := (a.dirY * Max(10, delta*moveSpeed)) / 10
 	left := c.x + dx - CHARACTERSIZE/2
 	right := c.x + dx + CHARACTERSIZE/2
 	top := c.y + dy - CHARACTERSIZE/2
@@ -38,7 +38,7 @@ func (a *MoveAction) Apply(c *Character, units []*Character, m *Map, delta int) 
 	for _, unit := range units {
 		if unit.Alive() && unit != c &&
 			(unit.Contains(left, top) || unit.Contains(right, top) ||
-			unit.Contains(left, bottom) || unit.Contains(right, bottom)) {
+				unit.Contains(left, bottom) || unit.Contains(right, bottom)) {
 			return
 		}
 	}
@@ -53,21 +53,21 @@ func (a *MoveAction) Name() string {
 }
 
 type AttackAction struct {
-	x, y int
+	x, y       int
 	nextAttack int
 }
 
 func NewAttackAction(x, y, speed int) *AttackAction {
-	return &AttackAction{x, y, (10-speed)*10}
+	return &AttackAction{x, y, (10 - speed) * 10}
 }
 
-func (a *AttackAction) Apply(c *Character, units[]*Character, m *Map, delta int) {
+func (a *AttackAction) Apply(c *Character, units []*Character, m *Map, delta int) {
 	if !c.Alive() {
 		return
 	}
 	a.nextAttack -= delta
 	if a.nextAttack < 0 {
-		a.nextAttack += (10-c.attackSpeed)*10
+		a.nextAttack += (10 - c.attackSpeed) * 10
 		for _, unit := range units {
 			top := a.y - c.damageSize/2
 			bottom := a.y + c.damageSize/2

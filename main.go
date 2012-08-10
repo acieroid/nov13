@@ -1,13 +1,12 @@
 package main
 
 import (
-	"github.com/acieroid/go-sfml"
 	"flag"
-	"time"
+	"github.com/acieroid/go-sfml"
 	"os"
 	"runtime/pprof"
+	"time"
 )
-
 
 const (
 	GAME = iota
@@ -15,7 +14,7 @@ const (
 	MENU
 	QUIT
 	SCROLLSTEP = 5 /* scrolls 5px at a time */
-	WATCHTIME = 3 /* 3 seconds of watch */
+	WATCHTIME  = 3 /* 3 seconds of watch */
 )
 
 var Font sfml.Font
@@ -95,7 +94,7 @@ func main() {
 	}
 
 	vm := sfml.NewVideoMode(uint(*Width), uint(*Height), 32)
-	window := sfml.NewRenderWindow(vm, "Novendiales 13", sfml.StyleTitlebar | sfml.StyleClose, sfml.ContextSettings{nil})
+	window := sfml.NewRenderWindow(vm, "Novendiales 13", sfml.StyleTitlebar|sfml.StyleClose, sfml.ContextSettings{nil})
 	black := sfml.FromRGB(0, 0, 0)
 	window.SetVerticalSyncEnabled(true)
 	window.SetKeyRepeatEnabled(false)
@@ -134,7 +133,7 @@ func main() {
 			return
 		}
 
-		delta = int(time.Since(lastUpdate)/1e6)
+		delta = int(time.Since(lastUpdate) / 1e6)
 		DrawMessages(delta, window)
 
 		window.SetActive(false)
@@ -149,7 +148,7 @@ func DrawText(text string, x, y int, center bool, win sfml.RenderWindow) {
 	Text.SetUnicodeString(text)
 	if center {
 		r := Text.LocalBounds()
-		Text.SetPosition(float32(x) - r.Width()/2, float32(y) - r.Height())
+		Text.SetPosition(float32(x)-r.Width()/2, float32(y)-r.Height())
 	} else {
 		Text.SetPosition(float32(x), float32(y))
 	}
@@ -160,13 +159,12 @@ func DrawTextBig(text string, x, y int, center bool, win sfml.RenderWindow) {
 	BigText.SetUnicodeString(text)
 	if center {
 		r := BigText.LocalBounds()
-		BigText.SetPosition(float32(x) - r.Width()/2, float32(y) + 5 - r.Height())
+		BigText.SetPosition(float32(x)-r.Width()/2, float32(y)+5-r.Height())
 	} else {
 		BigText.SetPosition(float32(x), float32(y))
 	}
 	win.DrawTextDefault(BigText)
 }
-
 
 func DrawImage(x, y int, sprite sfml.Sprite, win sfml.RenderWindow) {
 	sprite.SetPosition(float32(x), float32(y))

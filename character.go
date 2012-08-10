@@ -1,24 +1,24 @@
 package main
 
 import (
-	"github.com/acieroid/go-sfml"
 	"fmt"
+	"github.com/acieroid/go-sfml"
 )
 
 const (
-	CHARACTERSIZE = TILESIZE-8
+	CHARACTERSIZE = TILESIZE - 8
 )
 
 type Character struct {
-	team int
-	moveSpeed, attackSpeed int
-	forestBonus, roadBonus int
-	life, maxLife int
+	team                            int
+	moveSpeed, attackSpeed          int
+	forestBonus, roadBonus          int
+	life, maxLife                   int
 	damage, damageSize, damageRange int
-	x, y int
-	image sfml.Sprite
-	Type int
-	nextAction Action
+	x, y                            int
+	image                           sfml.Sprite
+	Type                            int
+	nextAction                      Action
 }
 
 var WarriorImage sfml.Sprite
@@ -34,28 +34,28 @@ const (
 )
 
 const (
-	WMOVESPEED = 5
+	WMOVESPEED   = 5
 	WATTACKSPEED = 3
 	WFORESTBONUS = -2
-	WROADBONUS = 2
-	WDAMAGESIZE = 30
+	WROADBONUS   = 2
+	WDAMAGESIZE  = 30
 	WDAMAGERANGE = 50
-	WDAMAGE = 3
-	WLIFE = 20
-	AMOVESPEED = 5
+	WDAMAGE      = 3
+	WLIFE        = 20
+	AMOVESPEED   = 5
 	AATTACKSPEED = 4
 	AFORESTBONUS = 3
-	AROADBONUS = 0
-	ADAMAGESIZE = 25
+	AROADBONUS   = 0
+	ADAMAGESIZE  = 25
 	ADAMAGERANGE = 150
-	ADAMAGE = 2
-	ALIFE = 20
-	BMOVESPEED = 8
+	ADAMAGE      = 2
+	ALIFE        = 20
+	BMOVESPEED   = 8
 	BATTACKSPEED = 1
-	BDAMAGESIZE = 45
+	BDAMAGESIZE  = 45
 	BDAMAGERANGE = 250
-	BDAMAGE = 6
-	BLIFE = 30
+	BDAMAGE      = 6
+	BLIFE        = 30
 )
 
 func NewCharacter(Type, team, ms, as, fb, rb, life, damage, ds, dr, x, y int, img sfml.Sprite) *Character {
@@ -103,7 +103,6 @@ func NewBoat(team, x, y int) *Character {
 		BoatImage)
 }
 
-
 func (c *Character) Draw(scrollX, scrollY int, win sfml.RenderWindow) {
 	if !c.Alive() {
 		return
@@ -112,27 +111,27 @@ func (c *Character) Draw(scrollX, scrollY int, win sfml.RenderWindow) {
 	if c.team == 1 {
 		border = GreenBorder
 	}
-	DrawShape(c.x - TILESIZE/2 - scrollX,
-		c.y - TILESIZE/2 - scrollY,
+	DrawShape(c.x-TILESIZE/2-scrollX,
+		c.y-TILESIZE/2-scrollY,
 		border, win)
-	DrawImage(c.x - CHARACTERSIZE/2 - scrollX,
-		c.y - CHARACTERSIZE/2 - scrollY,
+	DrawImage(c.x-CHARACTERSIZE/2-scrollX,
+		c.y-CHARACTERSIZE/2-scrollY,
 		c.image, win)
 	DrawText(fmt.Sprintf("%d/%d", c.life, c.maxLife),
-		c.x - TILESIZE/2 - scrollX,
-		c.y - TILESIZE/2 - scrollY,
+		c.x-TILESIZE/2-scrollX,
+		c.y-TILESIZE/2-scrollY,
 		false, win)
 	if c.nextAction != nil {
 		DrawText(c.nextAction.Name(),
-			c.x - TILESIZE/2 - scrollX,
-			c.y - TILESIZE/2 - scrollY + 14,
+			c.x-TILESIZE/2-scrollX,
+			c.y-TILESIZE/2-scrollY+14,
 			false, win)
 	}
 }
 
 func (c *Character) Contains(x, y int) bool {
-	return (x >= c.x - CHARACTERSIZE/2 && x <= c.x + CHARACTERSIZE/2 &&
-		y >= c.y - CHARACTERSIZE/2 && y <= c.y + CHARACTERSIZE/2)
+	return (x >= c.x-CHARACTERSIZE/2 && x <= c.x+CHARACTERSIZE/2 &&
+		y >= c.y-CHARACTERSIZE/2 && y <= c.y+CHARACTERSIZE/2)
 }
 
 func (c *Character) Alive() bool {
