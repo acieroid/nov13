@@ -95,7 +95,7 @@ func main() {
 	}
 
 	vm := sfml.NewVideoMode(uint(*Width), uint(*Height), 32)
-	window := sfml.NewRenderWindowDefault(vm, "Novendiales 13")
+	window := sfml.NewRenderWindow(vm, "Novendiales 13", sfml.StyleTitlebar | sfml.StyleClose, sfml.ContextSettings{nil})
 	black := sfml.FromRGB(0, 0, 0)
 	window.SetVerticalSyncEnabled(true)
 	window.SetKeyRepeatEnabled(false)
