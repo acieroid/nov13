@@ -146,7 +146,7 @@ func main() {
 }
 
 func DrawText(text string, x, y int, center bool, win sfml.RenderWindow) {
-	Text.SetString(text)
+	Text.SetUnicodeString(text)
 	if center {
 		r := Text.LocalBounds()
 		Text.SetPosition(float32(x) - r.Width()/2, float32(y) - r.Height())
@@ -157,10 +157,10 @@ func DrawText(text string, x, y int, center bool, win sfml.RenderWindow) {
 }
 
 func DrawTextBig(text string, x, y int, center bool, win sfml.RenderWindow) {
-	BigText.SetString(text)
+	BigText.SetUnicodeString(text)
 	if center {
 		r := BigText.LocalBounds()
-		BigText.SetPosition(float32(x) - r.Width()/2, float32(y) - r.Height())
+		BigText.SetPosition(float32(x) - r.Width()/2, float32(y) + 5 - r.Height())
 	} else {
 		BigText.SetPosition(float32(x), float32(y))
 	}
