@@ -1,8 +1,7 @@
 package main
 
 import (
-	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
-	"reflect"
+	"github.com/acieroid/go-sfml"
 	"time"
 )
 
@@ -33,36 +32,33 @@ func NewGame(mapName string, w, h int) (g *Game) {
 	return
 }
 
-func (g *Game) Run(screen *sdl.Surface) int {
-	select {
-	case ev := <-sdl.Events:
-		/* TODO: something more clean for the cases ? */
-		switch reflect.TypeOf(ev) {
-		case reflect.TypeOf(sdl.QuitEvent{}):
-			return QUIT
-		case reflect.TypeOf(sdl.KeyboardEvent{}):
-			e := ev.(sdl.KeyboardEvent)
+func (g *Game) Run(win sfml.RenderWindow) int {
+	e, b := win.PollEvent()
+	for b {
+		switch e.(type) {
+		case sfml.KeyEvent:
+			ev := e.(sfml.KeyEvent)
 			if g.userAction != nil &&
 				int(time.Since(g.lastKey)/1e6) > 250 {
-				quit := g.userAction.KeyPress(e.Keysym.Sym)
+				quit := g.userAction.KeyPress(ev.Code())
 				g.userAction = nil
 				if quit {
 					return MENU
 				}
 				g.lastKey = time.Now()
 			}
-			switch e.Keysym.Sym {
-			case sdl.K_LEFT:
+			switch ev.Code() {
+			case sfml.KeyLeft:
 				g.scrollX = Max(g.scrollX-SCROLLSTEP, 0)
-			case sdl.K_RIGHT:
+			case sfml.KeyRight:
 				g.scrollX = Min(g.scrollX+SCROLLSTEP, *Width)
-			case sdl.K_UP:
+			case sfml.KeyUp:
 				g.scrollY = Max(g.scrollY-SCROLLSTEP, 0)
-			case sdl.K_DOWN:
+			case sfml.KeyDown:
 				g.scrollY = Min(g.scrollY+SCROLLSTEP, *Height)
-			case sdl.K_n:
+			case sfml.KeyN:
 				g.ScrollToNext()
-			case sdl.K_ESCAPE:
+			case sfml.KeyEscape:
 				if g.userAction == nil && int(time.Since(g.lastKey)/1e6) > 250 {
 					if g.menu != nil {
 						g.menu = nil
@@ -71,7 +67,7 @@ func (g *Game) Run(screen *sdl.Surface) int {
 					}
 					g.lastKey = time.Now()
 				}
-			case sdl.K_RETURN:
+			case sfml.KeyReturn:
 				if g.userAction == nil && g.menu == nil && int(time.Since(g.lastKey)/1e6) > 250 {
 					if g.mode == GAME {
 						if g.AllUnitsGood() {
@@ -85,14 +81,15 @@ func (g *Game) Run(screen *sdl.Surface) int {
 					g.lastKey = time.Now()
 				}
 			}
-		case reflect.TypeOf(sdl.MouseButtonEvent{}):
-			e := ev.(sdl.MouseButtonEvent)
-			if e.Type == sdl.MOUSEBUTTONDOWN && e.Button == 1 {
-				x := int(e.X) + g.scrollX
-				y := int(e.Y) + g.scrollY
+		case sfml.MouseButtonEvent:
+			ev := e.(sfml.MouseButtonEvent)
+			if ev.Type == sfml.EvtMouseButtonPressed && ev.Button() == sfml.MouseLeft {
+				x := ev.X() + g.scrollX
+				y := ev.Y() + g.scrollY
+
 				if g.menu != nil && g.menu.Contains(x, y) {
 					g.menu = g.menu.Clicked(x, y)
-				} else if g.watchButton.Contains(int(e.X), int(e.Y)) {
+				} else if g.watchButton.Contains(ev.X(), ev.Y()) {
 					if g.mode == GAME {
 						if g.AllUnitsGood() {
 							g.StartWatch()
@@ -113,7 +110,7 @@ func (g *Game) Run(screen *sdl.Surface) int {
 				}
 			}
 		}
-	default:
+		e, b = win.PollEvent()
 	}
 
 	if g.mode == WATCH {
@@ -149,18 +146,17 @@ func (g *Game) Run(screen *sdl.Surface) int {
 		}
 	}
 
-
-	g.m.Draw(g.scrollX, g.scrollY, screen)
+	g.m.Draw(g.scrollX, g.scrollY, win)
 	for _, unit := range g.units {
-		unit.Draw(g.scrollX, g.scrollY, screen)
+		unit.Draw(g.scrollX, g.scrollY, win)
 	}
 	if g.menu != nil {
-		g.menu.Draw(g.scrollX, g.scrollY, screen)
+		g.menu.Draw(g.scrollX, g.scrollY, win)
 	}
 	if g.userAction != nil {
-		DrawUserAction(g.userAction, screen)
+		DrawUserAction(g.userAction, win)
 	}
-	g.watchButton.Draw(screen)
+	g.watchButton.Draw(win)
 	return GAME
 }
 

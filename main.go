@@ -1,14 +1,17 @@
 package main
 
+/* TODO:
+ - Don't enable key repeat, but instead check if directions are pressed to scroll
+*/
+
 import (
-	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
-	"github.com/0xe2-0x9a-0x9b/Go-SDL/ttf"
-	"github.com/0xe2-0x9a-0x9b/Go-SDL/gfx"
+	"github.com/acieroid/go-sfml"
 	"flag"
 	"time"
 	"os"
 	"runtime/pprof"
 )
+
 
 const (
 	GAME = iota
@@ -19,13 +22,16 @@ const (
 	WATCHTIME = 3 /* 3 seconds of watch */
 )
 
-var Font *ttf.Font
-var BigFont *ttf.Font
+var Font sfml.Font
+var Text sfml.Text
+var BigText sfml.Text
 var MapDir = flag.String("maps", "maps", "Map directory")
 var Width = flag.Int("width", 800, "Width of the window")
 var Height = flag.Int("height", 600, "Height of the window")
 var Fullscreen = flag.Bool("fullscreen", false, "Fullscreen")
 var CPUProfile = flag.String("cpuprofile", "", "Write CPU Profile to file")
+
+var RenderTexture sfml.RenderTexture
 
 func Max(x, y int) int {
 	if x > y {
@@ -48,20 +54,36 @@ func Abs(x int) int {
 	return x
 }
 
-func LoadImage(name string) *sdl.Surface {
-	image := sdl.Load(name)
-	if image == nil {
-		panic(sdl.GetError())
+func LoadImage(name string) sfml.Sprite {
+	texture, err := sfml.TextureFromFile(name, sfml.IntRect{})
+	if err != nil {
+		panic(err)
 	}
-	return image
+	sprite, err := sfml.NewSprite()
+	if err != nil {
+		panic(err)
+	}
+	sprite.SetTexture(texture, false)
+	texture.Cref = nil
+	return sprite
 }
 
-func LoadFont(name string, size int) *ttf.Font {
-	font := ttf.OpenFont(name, size)
-	if font == nil {
-		panic(sdl.GetError())
+func LoadFont(name string) sfml.Font {
+	font, err := sfml.FontFromFile(name)
+	if err != nil {
+		panic(err)
 	}
 	return font
+}
+
+func LoadText(font sfml.Font, size int) sfml.Text {
+	text, err := sfml.NewText()
+	if err != nil {
+		panic(err)
+	}
+	text.SetFont(font)
+	text.SetCharacterSize(size)
+	return text
 }
 
 func main() {
@@ -76,52 +98,39 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
-	if sdl.Init(sdl.INIT_VIDEO) != 0 || ttf.Init() != 0 {
-		panic(sdl.GetError())
-	}
+	vm := sfml.NewVideoMode(uint(*Width), uint(*Height), 32)
+	window := sfml.NewRenderWindowDefault(vm, "Novendiales 13")
+	black := sfml.FromRGB(0, 0, 0)
+	//window.SetFramerateLimit(150)
+	window.SetVerticalSyncEnabled(true)
+	//window.SetKeyRepeatEnabled(true)
 
-	defer sdl.Quit()
-	defer ttf.Quit()
-
-	var videoMode uint32 = 0
-	if *Fullscreen {
-		videoMode = sdl.FULLSCREEN
-	}
-
-	var screen = sdl.SetVideoMode(*Width, *Height, 32, videoMode)
-	if screen == nil {
-		panic(sdl.GetError())
-	}
-
-	sdl.WM_SetCaption("Novendiales 13", "")
-	sdl.EnableKeyRepeat(10, 10)
-
-	Font = LoadFont("font.ttf", 12)
-	defer Font.Close()
-	BigFont = LoadFont("font.ttf", 16)
-	defer BigFont.Close()
+	Font = LoadFont("font.ttf")
+	defer Font.Destroy()
+	Text = LoadText(Font, 12)
+	defer Text.Destroy()
+	BigText = LoadText(Font, 16)
+	defer BigText.Destroy()
 
 	var game *Game
 	menu := NewMainMenu(*MapDir, *Width, *Height)
-	fps := gfx.NewFramerate()
-	fps.SetFramerate(30)
 	InitMessages(*Width, *Height)
 	lastUpdate := time.Now()
 	delta := 0
 	mode := MENU
 	mapName := ""
 
-	for true {
-		screen.FillRect(nil, 0x000000)
+	for window.IsOpen() {
+		window.Clear(black)
 
 		switch mode {
 		case MENU:
-			mapName, mode = menu.Run(screen)
+			mapName, mode = menu.Run(window)
 			if mode == GAME {
 				game = NewGame(mapName, *Width, *Height)
 			}
 		case GAME:
-			mode = game.Run(screen)
+			mode = game.Run(window)
 			if mode == MENU {
 				/* Recreate the menu to avoid quitting when esc is still pressed */
 				menu = NewMainMenu(*MapDir, *Width, *Height)
@@ -131,43 +140,41 @@ func main() {
 		}
 
 		delta = int(time.Since(lastUpdate)/1e6)
-		DrawMessages(delta, screen)
+		DrawMessages(delta, window)
 
+		window.SetActive(false)
 
-		screen.Flip()
-		fps.FramerateDelay()
+		window.Display()
 		lastUpdate = time.Now()
 	}
-
+	RenderTexture.Destroy()
 }
 
-func DrawText(text string, x, y int, center bool, surf *sdl.Surface) {
-	var w int
-	var h int
-	if center {
-		w, h, _ = Font.SizeText(text)
-	}
-	surf.Blit(&sdl.Rect{int16(x - w/2), int16(y - h/2), 0, 0},
-		ttf.RenderUTF8_Solid(Font, text, sdl.Color{0, 0, 0, 0}),
-		nil)
+func DrawText(text string, x, y int, center bool, win sfml.RenderWindow) {
+	/* TODO: centerize text */
+	Text.SetString(text)
+	Text.SetPosition(float32(x), float32(y))
+	win.DrawTextDefault(Text)
 }
 
-func DrawTextBig(text string, x, y int, center bool, surf *sdl.Surface) {
-	var w int
-	var h int
-	if center {
-		w, h, _ = Font.SizeText(text)
-	}
-	surf.Blit(&sdl.Rect{int16(x - w/2),
-		int16(y - h/2), 0, 0},
-		ttf.RenderUTF8_Solid(BigFont, text, sdl.Color{255, 255, 255, 0}),
-		nil)
+func DrawTextBig(text string, x, y int, center bool, win sfml.RenderWindow) {
+	/* TODO: centerize text */
+	BigText.SetString(text)
+	BigText.SetPosition(float32(x), float32(y))
+	win.DrawTextDefault(BigText)
 }
 
 
-func DrawImage(x, y int, img, surf *sdl.Surface) {
-	surf.Blit(&sdl.Rect{int16(x), int16(y), 0, 0}, img, nil)
+func DrawImage(x, y int, sprite sfml.Sprite, win sfml.RenderWindow) {
+	sprite.SetPosition(float32(x), float32(y))
+	win.DrawSpriteDefault(sprite)
 }
+
+func DrawShape(x, y int, shape sfml.RectangleShape, win sfml.RenderWindow) {
+	shape.SetPosition(float32(x), float32(y))
+	win.DrawRectangleShapeDefault(shape)
+}
+
 
 func Square(x int) int {
 	return x*x

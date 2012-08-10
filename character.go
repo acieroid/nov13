@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
+	"github.com/acieroid/go-sfml"
 	"fmt"
 )
 
@@ -16,16 +16,16 @@ type Character struct {
 	life, maxLife int
 	damage, damageSize, damageRange int
 	x, y int
-	image *sdl.Surface
+	image sfml.Sprite
 	Type int
 	nextAction Action
 }
 
-var WarriorImage *sdl.Surface
-var ArcherImage *sdl.Surface
-var BoatImage *sdl.Surface
-var RedBorder *sdl.Surface
-var GreenBorder *sdl.Surface
+var WarriorImage sfml.Sprite
+var ArcherImage sfml.Sprite
+var BoatImage sfml.Sprite
+var RedBorder sfml.RectangleShape
+var GreenBorder sfml.RectangleShape
 
 const (
 	WARRIOR = iota
@@ -58,24 +58,20 @@ const (
 	BLIFE = 30
 )
 
-func NewCharacter(Type, team, ms, as, fb, rb, life, damage, ds, dr, x, y int, img *sdl.Surface) *Character {
-	if RedBorder == nil {
-		RedBorder = sdl.CreateRGBSurface(sdl.HWSURFACE,
-			TILESIZE, TILESIZE, 32, 0, 0, 0, 0)
-		RedBorder.FillRect(&sdl.Rect{0, 0, TILESIZE, TILESIZE},
-			0x00FF0000)
-		RedBorder.SetAlpha(sdl.SRCALPHA, 100)
-		GreenBorder = sdl.CreateRGBSurface(sdl.HWSURFACE,
-			TILESIZE, TILESIZE, 32, 0, 0, 0, 0)
-		GreenBorder.FillRect(&sdl.Rect{0, 0, TILESIZE, TILESIZE},
-			0x0000FF00)
-		GreenBorder.SetAlpha(sdl.SRCALPHA, 100)
+func NewCharacter(Type, team, ms, as, fb, rb, life, damage, ds, dr, x, y int, img sfml.Sprite) *Character {
+	if RedBorder.Cref == nil {
+		RedBorder = sfml.NewRectangleShape()
+		RedBorder.SetSize(TILESIZE, TILESIZE)
+		RedBorder.SetFillColor(sfml.FromRGBA(255, 0, 0, 100))
+		GreenBorder = sfml.NewRectangleShape()
+		GreenBorder.SetSize(TILESIZE, TILESIZE)
+		GreenBorder.SetFillColor(sfml.FromRGBA(0, 255, 0, 100))
 	}
 	return &Character{team, ms, as, fb, rb, life, life, damage, ds, dr, x, y, img, Type, nil}
 }
 
 func NewWarrior(team, x, y int) *Character {
-	if WarriorImage == nil {
+	if WarriorImage.Cref == nil {
 		WarriorImage = LoadImage("img/warrior.png")
 	}
 	return NewCharacter(WARRIOR, team,
@@ -86,7 +82,7 @@ func NewWarrior(team, x, y int) *Character {
 }
 
 func NewArcher(team, x, y int) *Character {
-	if ArcherImage == nil {
+	if ArcherImage.Cref == nil {
 		ArcherImage = LoadImage("img/archer.png")
 	}
 	return NewCharacter(ARCHER, team,
@@ -97,7 +93,7 @@ func NewArcher(team, x, y int) *Character {
 }
 
 func NewBoat(team, x, y int) *Character {
-	if BoatImage == nil {
+	if BoatImage.Cref == nil {
 		BoatImage = LoadImage("img/boat.png")
 	}
 	return NewCharacter(BOAT, team,
@@ -108,7 +104,7 @@ func NewBoat(team, x, y int) *Character {
 }
 
 
-func (c *Character) Draw(scrollX, scrollY int, surf *sdl.Surface) {
+func (c *Character) Draw(scrollX, scrollY int, win sfml.RenderWindow) {
 	if !c.Alive() {
 		return
 	}
@@ -116,21 +112,21 @@ func (c *Character) Draw(scrollX, scrollY int, surf *sdl.Surface) {
 	if c.team == 1 {
 		border = GreenBorder
 	}
-	DrawImage(c.x - TILESIZE/2 - scrollX,
+	DrawShape(c.x - TILESIZE/2 - scrollX,
 		c.y - TILESIZE/2 - scrollY,
-		border, surf)
+		border, win)
 	DrawImage(c.x - CHARACTERSIZE/2 - scrollX,
 		c.y - CHARACTERSIZE/2 - scrollY,
-		c.image, surf)
+		c.image, win)
 	DrawText(fmt.Sprintf("%d/%d", c.life, c.maxLife),
 		c.x - TILESIZE/2 - scrollX,
 		c.y - TILESIZE/2 - scrollY,
-		false, surf)
+		false, win)
 	if c.nextAction != nil {
 		DrawText(c.nextAction.Name(),
 			c.x - TILESIZE/2 - scrollX,
 			c.y - TILESIZE/2 - scrollY + 14,
-			false, surf)
+			false, win)
 	}
 }
 

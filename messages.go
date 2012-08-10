@@ -2,29 +2,29 @@ package main
 
 import (
 	"container/list"
-	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
+	"github.com/acieroid/go-sfml"
 )
 
 var Mgr *MessageManager
 
 type Message struct {
-	text     string
-	duration int64
+	text          string
+	duration      int64
 	remainingTime int
 }
 
 type MessageManager struct {
-	messages  *list.List
-	bg        *sdl.Surface
-	w, h int
+	messages *list.List
+	bg       sfml.RectangleShape
+	w, h     int
 }
 
 func InitMessages(width, height int) {
-	Mgr = &MessageManager{list.New(), nil, width, height}
-	Mgr.bg = sdl.CreateRGBSurface(sdl.HWSURFACE,
-		width, 24, 32, 0, 0, 0, 0)
-	Mgr.bg.FillRect(&sdl.Rect{0, 0, uint16(width), 24}, 0x0000FF00)
-	Mgr.bg.SetAlpha(sdl.SRCALPHA, 150)
+	bg := sfml.NewRectangleShape()
+	bg.SetSize(float32(width), 24)
+	bg.SetFillColor(sfml.FromRGBA(0, 255, 0, 150))
+	bg.SetPosition(0, float32(height/2 - 12))
+	Mgr = &MessageManager{list.New(), bg, width, height}
 }
 
 func AddMessage(message string) {
@@ -49,12 +49,11 @@ func getMessageToDraw(delta int) (string, bool) {
 	return "", false
 }
 
-
-func DrawMessages(delta int, surf *sdl.Surface) {
+func DrawMessages(delta int, win sfml.RenderWindow) {
+	w, h := win.Size()
 	message, has := getMessageToDraw(delta)
 	if has {
-		surf.Blit(&sdl.Rect{0, int16(surf.H/2 - 12), 0, 0},
-			Mgr.bg, nil)
-		DrawTextBig(message, int(surf.W/2), int(surf.H/2), true, surf)
+		win.DrawRectangleShapeDefault(Mgr.bg)
+		DrawTextBig(message, int(w/2), int(h/2), true, win)
 	}
 }

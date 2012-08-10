@@ -1,36 +1,53 @@
 package main
 
 import (
-	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
-	"github.com/0xe2-0x9a-0x9b/Go-SDL/ttf"
+	"github.com/acieroid/go-sfml"
 	"time"
 )
 
 type WatchButton struct {
 	x, y int
 	enabled bool
-	bg, text, grayText *sdl.Surface
-	bgPos, textPos *sdl.Rect
+	bg sfml.RectangleShape
+	text, grayText sfml.Text
 	lastStart time.Time
 	finished bool
 }
 
 func NewWatchButton(x, y int) *WatchButton {
-	bg := sdl.CreateRGBSurface(sdl.HWSURFACE, 80, 17, 32, 0, 0, 0, 0)
-	bg.FillRect(&sdl.Rect{0, 0, 80, 17}, 0x00123456)
-	bgPos := &sdl.Rect{int16(x), int16(y), 0, 0}
-	text := ttf.RenderUTF8_Solid(Font, "Regarder !", sdl.Color{255, 255, 255, 0})
-	grayText := ttf.RenderUTF8_Solid(Font, "Jouer !", sdl.Color{128, 20, 20, 0})
-	textPos := &sdl.Rect{int16(x+2), int16(y+2), 0, 0}
-	return &WatchButton{x, y, false, bg, text, grayText, bgPos, textPos, time.Now(), false}
+	bg := sfml.NewRectangleShape()
+	bg.SetSize(80, 17)
+	bg.SetFillColor(sfml.FromRGB(012, 123, 234))
+	bg.SetPosition(float32(x), float32(y))
+
+	text, err := sfml.NewText()
+	if err != nil {
+		panic(err)
+	}
+	text.SetFont(Font)
+	text.SetString("Regarder !")
+	text.SetColor(sfml.FromRGB(255, 255, 255))
+	text.SetPosition(float32(x+2), float32(y+2))
+	text.SetCharacterSize(12)
+
+	grayText, err := sfml.NewText()
+	if err != nil {
+		panic(err)
+	}
+	grayText.SetFont(Font)
+	grayText.SetString("Jouer !")
+	grayText.SetColor(sfml.FromRGB(128, 20, 20))
+	grayText.SetPosition(float32(x+2), float32(y+2))
+	grayText.SetCharacterSize(12)
+	return &WatchButton{x, y, false, bg, text, grayText, time.Now(), false}
 }
 
-func (w *WatchButton) Draw(surf *sdl.Surface) {
-	surf.Blit(w.bgPos, w.bg, nil)
+func (w *WatchButton) Draw(win sfml.RenderWindow) {
+	win.DrawRectangleShapeDefault(w.bg)
 	if w.enabled {
-		surf.Blit(w.textPos, w.grayText, nil)
+		win.DrawTextDefault(w.grayText)
 	} else {
-		surf.Blit(w.textPos, w.text, nil)
+		win.DrawTextDefault(w.text)
 	}
 }
 

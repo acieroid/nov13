@@ -1,28 +1,26 @@
 package main
 
 import (
-	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
+	"github.com/acieroid/go-sfml"
 )
 
 type UserAction interface {
-	KeyPress(sym uint32) bool
+	KeyPress(code sfml.KeyCode) bool
 	Text() string
 }
 
-var bgSurf *sdl.Surface
+var Bg sfml.RectangleShape
 
-func DrawUserAction(a UserAction, surf *sdl.Surface) {
-	if bgSurf == nil {
-		bgSurf = sdl.CreateRGBSurface(sdl.HWSURFACE,
-			int(surf.W), 24, 32, 0, 0, 0, 0)
-		bgSurf.FillRect(&sdl.Rect{0, 0, uint16(surf.W), 24},
-			0x00FF0000)
-		bgSurf.SetAlpha(sdl.SRCALPHA, 150)
+func DrawUserAction(a UserAction, win sfml.RenderWindow) {
+	w, h := win.Size()
+	if Bg.Cref == nil {
+		Bg = sfml.NewRectangleShape()
+		Bg.SetSize(float32(w), 24)
+		Bg.SetFillColor(sfml.FromRGBA(255, 0, 0, 150))
+		Bg.SetPosition(0, float32(h/2-12+50))
 	}
-	surf.Blit(&sdl.Rect{0, int16(surf.H/2 - 12 + 50), 0, 0},
-		bgSurf, nil)
-	DrawTextBig(a.Text(), int(surf.W/2),
-		int(surf.H/2 + 50), true, surf)
+	win.DrawRectangleShapeDefault(Bg)
+	DrawTextBig(a.Text(), int(w)/2, int(h)/2+50, true, win)
 }
 
 type QuitUserAction struct {
@@ -32,8 +30,8 @@ func NewQuitUserAction() *QuitUserAction {
 	return &QuitUserAction{}
 }
 
-func (a *QuitUserAction) KeyPress(sym uint32) bool {
-	return sym == sdl.K_ESCAPE
+func (a *QuitUserAction) KeyPress(code sfml.KeyCode) bool {
+	return code == sfml.KeyEscape
 }
 
 func (a *QuitUserAction) Text() string {
@@ -48,8 +46,8 @@ func NewEOGUserAction(won bool) *EOGUserAction {
 	return &EOGUserAction{won}
 }
 
-func (a *EOGUserAction) KeyPress(sym uint32) bool {
-	return sym == sdl.K_ESCAPE
+func (a *EOGUserAction) KeyPress(code sfml.KeyCode) bool {
+	return code == sfml.KeyEscape
 }
 
 func (a *EOGUserAction) Text() string {
@@ -67,8 +65,8 @@ func NewWatchUserAction(g *Game) *WatchUserAction {
 	return &WatchUserAction{g}
 }
 
-func (a *WatchUserAction) KeyPress(sym uint32) bool {
-	if sym == sdl.K_RETURN {
+func (a *WatchUserAction) KeyPress(code sfml.KeyCode) bool {
+	if code == sfml.KeyReturn {
 		a.g.StartWatch()
 	}
 	return false

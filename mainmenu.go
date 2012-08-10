@@ -1,19 +1,18 @@
 package main
 
 import (
-	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
 	"container/ring"
-	"reflect"
 	"fmt"
+	"github.com/acieroid/go-sfml"
 	"os"
 	"strings"
 	"time"
 )
 
 type MainMenu struct {
-	maps *ring.Ring
+	maps      *ring.Ring
 	lastModif time.Time
-	w, h int
+	w, h      int
 }
 
 func NewMainMenu(mapDir string, w, h int) (m *MainMenu) {
@@ -45,28 +44,26 @@ func NewMainMenu(mapDir string, w, h int) (m *MainMenu) {
 	return &MainMenu{maps, time.Now(), w, h}
 }
 
-func (m *MainMenu) Run(screen *sdl.Surface) (string, int) {
-	select {
-	case ev := <-sdl.Events:
-		switch reflect.TypeOf(ev) {
-		case reflect.TypeOf(sdl.QuitEvent{}):
-			return "", QUIT
-		case reflect.TypeOf(sdl.KeyboardEvent{}):
-			e := ev.(sdl.KeyboardEvent)
-			switch e.Keysym.Sym {
-			case sdl.K_LEFT:
+func (m *MainMenu) Run(win sfml.RenderWindow) (string, int) {
+	e, b := win.PollEvent()
+	if b {
+		switch e.(type) {
+		case sfml.KeyEvent:
+			ev := e.(sfml.KeyEvent)
+			switch ev.Code() {
+			case sfml.KeyLeft:
 				if int(time.Since(m.lastModif)/1e6) > 250 {
 					m.maps = m.maps.Move(1)
 					m.lastModif = time.Now()
 				}
-			case sdl.K_RIGHT:
+			case sfml.KeyRight:
 				if int(time.Since(m.lastModif)/1e6) > 250 {
 					m.maps = m.maps.Move(-1)
 					m.lastModif = time.Now()
 				}
-			case sdl.K_RETURN:
+			case sfml.KeyReturn:
 				return m.maps.Value.(string), GAME
-			case sdl.K_ESCAPE:
+			case sfml.KeyEscape:
 				if int(time.Since(m.lastModif)/1e6) > 250 {
 					return "", QUIT
 				}
@@ -76,7 +73,7 @@ func (m *MainMenu) Run(screen *sdl.Surface) (string, int) {
 
 	DrawTextBig(fmt.Sprintf("< Map: %s >", m.maps.Value.(string)),
 		m.w/2, m.h/2,
-		true, screen)
+		true, win)
 
 	return "", MENU
 }

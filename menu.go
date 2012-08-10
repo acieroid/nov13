@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
+	"github.com/acieroid/go-sfml"
 )
 
 type Menu interface {
@@ -18,23 +18,23 @@ func NewCharacterMenu(c *Character) *CharacterMenu {
 	return &CharacterMenu{c}
 }
 
-func (m *CharacterMenu) Draw(scrollX, scrollY int, surf *sdl.Surface) {
+func (m *CharacterMenu) Draw(scrollX, scrollY int, win sfml.RenderWindow) {
 	DrawText("Attaquer",
 		m.c.x + TILESIZE/2 - scrollX,
 		m.c.y - TILESIZE/2 - scrollY,
-		false, surf)
+		false, win)
 	DrawText("Déplacer",
 		m.c.x + TILESIZE/2 - scrollX,
 		m.c.y - TILESIZE/2 + 14 - scrollY,
-		false, surf)
+		false, win)
 	DrawText("Attendre",
 		m.c.x + TILESIZE/2 - scrollX,
 		m.c.y - TILESIZE/2 + 28 - scrollY,
-		false, surf)
+		false, win)
 	DrawText("Retour",
 		m.c.x + TILESIZE/2 - scrollX,
 		m.c.y - TILESIZE/2 + 42 - scrollY,
-		false, surf)
+		false, win)
 }
 
 func (m *CharacterMenu) Contains(x, y int) bool {
@@ -59,37 +59,27 @@ func (m *CharacterMenu) Clicked(x, y int) Menu {
 
 type AttackMenu struct {
 	c *Character
-	green, red *sdl.Surface
+	green, red sfml.RectangleShape
 }
 
 func NewAttackMenu(c *Character) *AttackMenu {
-	green := sdl.CreateRGBSurface(sdl.HWSURFACE,
-		c.damageSize, c.damageSize,
-		32, 0, 0, 0, 0)
-	green.FillRect(&sdl.Rect{0, 0,
-		uint16(c.damageSize), uint16(c.damageSize)},
-		0x0000FF00)
-	green.SetAlpha(sdl.SRCALPHA, 150)
-	red := sdl.CreateRGBSurface(sdl.HWSURFACE,
-		c.damageSize, c.damageSize,
-		32, 0, 0, 0, 0)
-	red.FillRect(&sdl.Rect{0, 0,
-		uint16(c.damageSize), uint16(c.damageSize)},
-		0x00FF0000)
-	red.SetAlpha(sdl.SRCALPHA, 200)
+	green := sfml.NewRectangleShape()
+	green.SetSize(float32(c.damageSize), float32(c.damageSize))
+	green.SetFillColor(sfml.FromRGBA(0, 255, 0, 150))
+	red := green.Copy()
+	red.SetFillColor(sfml.FromRGBA(255, 0, 0, 150))
 	return &AttackMenu{c, green, red}
 }
 
-func (m *AttackMenu) Draw(scrollX, scrollY int, surf *sdl.Surface) {
-	var x, y int
-	/* this sucks in SDL binding, we should use a multiple value return */
-	sdl.GetMouseState(&x, &y)
+func (m *AttackMenu) Draw(scrollX, scrollY int, win sfml.RenderWindow) {
+	x, y := sfml.MousePositionAbsolute()
 	s := m.green
 	if Square(x + scrollX - m.c.x) + Square(y + scrollY- m.c.y) > Square(m.c.damageRange) {
 		/* TODO: red if outside map */
 		s = m.red
 	}
-	DrawImage(x - m.c.damageSize/2, y - m.c.damageSize/2, s, surf)
+	s.SetPosition(float32(x - m.c.damageSize/2), float32(y - m.c.damageSize/2))
+	win.DrawRectangleShapeDefault(s)
 }
 
 func (m *AttackMenu) Contains(x, y int) bool {
@@ -109,10 +99,10 @@ type MoveMenu struct {
 	c *Character
 }
 
-var Left, Right, Up, Down, BottomLeft, BottomRight, TopLeft, TopRight *sdl.Surface
+var Left, Right, Up, Down, BottomLeft, BottomRight, TopLeft, TopRight sfml.Sprite
 
 func NewMoveMenu(c *Character) (m *MoveMenu) {
-	if Left == nil {
+	if Left.Cref == nil {
 		Left = LoadImage("img/left.png")
 		Right = LoadImage("img/right.png")
 		Up = LoadImage("img/up.png")
@@ -126,15 +116,15 @@ func NewMoveMenu(c *Character) (m *MoveMenu) {
 }
 
 
-func (m *MoveMenu) Draw(scrollX, scrollY int, surf *sdl.Surface) {
-	DrawImage(m.c.x - 3*TILESIZE/2 - scrollX, m.c.y - TILESIZE/2 - scrollY, Left, surf)
-	DrawImage(m.c.x - 3*TILESIZE/2 - scrollX, m.c.y - 3*TILESIZE/2 - scrollY, TopLeft, surf)
-	DrawImage(m.c.x - 3*TILESIZE/2 - scrollX, m.c.y + TILESIZE/2 - scrollY, BottomLeft, surf)
-	DrawImage(m.c.x - TILESIZE/2 - scrollX, m.c.y - 3*TILESIZE/2 - scrollY, Up, surf)
-	DrawImage(m.c.x - TILESIZE/2 - scrollX, m.c.y + TILESIZE/2 - scrollY, Down, surf)
-	DrawImage(m.c.x + TILESIZE/2 - scrollX, m.c.y - 3*TILESIZE/2 - scrollY, TopRight, surf)
-	DrawImage(m.c.x + TILESIZE/2 - scrollX, m.c.y - TILESIZE/2 - scrollY, Right, surf)
-	DrawImage(m.c.x + TILESIZE/2 - scrollX, m.c.y + TILESIZE/2 - scrollY, BottomRight, surf)
+func (m *MoveMenu) Draw(scrollX, scrollY int, win sfml.RenderWindow) {
+	DrawImage(m.c.x - 3*TILESIZE/2 - scrollX, m.c.y - TILESIZE/2 - scrollY, Left, win)
+	DrawImage(m.c.x - 3*TILESIZE/2 - scrollX, m.c.y - 3*TILESIZE/2 - scrollY, TopLeft, win)
+	DrawImage(m.c.x - 3*TILESIZE/2 - scrollX, m.c.y + TILESIZE/2 - scrollY, BottomLeft, win)
+	DrawImage(m.c.x - TILESIZE/2 - scrollX, m.c.y - 3*TILESIZE/2 - scrollY, Up, win)
+	DrawImage(m.c.x - TILESIZE/2 - scrollX, m.c.y + TILESIZE/2 - scrollY, Down, win)
+	DrawImage(m.c.x + TILESIZE/2 - scrollX, m.c.y - 3*TILESIZE/2 - scrollY, TopRight, win)
+	DrawImage(m.c.x + TILESIZE/2 - scrollX, m.c.y - TILESIZE/2 - scrollY, Right, win)
+	DrawImage(m.c.x + TILESIZE/2 - scrollX, m.c.y + TILESIZE/2 - scrollY, BottomRight, win)
 }
 
 func (m *MoveMenu) Contains(x, y int) bool {

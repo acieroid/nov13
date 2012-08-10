@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/0xe2-0x9a-0x9b/Go-SDL/sdl"
+	"github.com/acieroid/go-sfml"
 	"os"
 	"log"
 	"bufio"
@@ -20,13 +20,14 @@ const (
 type Map struct {
 	width, height int
 	contents [][]int
-	images []*sdl.Surface
-	surf *sdl.Surface
+	images []sfml.Sprite
+	surf sfml.Sprite
 }
 
 func LoadMap(name string) (m *Map, units []*Character) {
 	m = &Map{}
 	file, err := os.Open(fmt.Sprintf("maps/%s.txt", name))
+	defer file.Close()
 	if err != nil {
 		panic(err)
 	}
@@ -91,34 +92,34 @@ func LoadMap(name string) (m *Map, units []*Character) {
 		}
 	}
 
-	m.images = []*sdl.Surface{
+	m.images = []sfml.Sprite{
 		LoadImage("img/grass.png"),
 		LoadImage("img/road.png"),
 		LoadImage("img/forest.png"),
 		LoadImage("img/water.png")}
 
-	m.surf = sdl.CreateRGBSurface(sdl.HWSURFACE,
-		m.width*TILESIZE, m.height*TILESIZE,
-		32, 0, 0, 0, 0)
+	m.surf, err = sfml.NewSprite()
+	if err != nil {
+		panic(err)
+	}
+
+	RenderTexture = sfml.NewRenderTexture(uint(m.width*TILESIZE), uint(m.height*TILESIZE), false)
+	//defer renderTexture.Destroy() // shouldn't be destroyed, else the texture is also destroyed
 	for x := 0; x < m.width; x++ {
 		for y := 0; y < m.height; y++ {
-			m.surf.Blit(&sdl.Rect{
-				int16(x * TILESIZE),
-				int16(y * TILESIZE),
-				0, 0},
-				m.images[m.contents[x][y]-1], nil)
+			sprite := m.images[m.contents[x][y]-1]
+			sprite.SetPosition(float32(x*TILESIZE), float32(y*TILESIZE))
+			RenderTexture.DrawSpriteDefault(sprite)
+			sprite = sfml.Sprite{nil}
 		}
 	}
 
+	m.surf.SetTexture(RenderTexture.Texture(), false)
 	return
 }
 
-func (m *Map) Draw(scrollX, scrollY int, surf *sdl.Surface) {
-	surf.Blit(&sdl.Rect{
-		int16(-scrollX),
-		int16(-scrollY),
-		0, 0},
-		m.surf, nil)
+func (m *Map) Draw(scrollX, scrollY int, win sfml.RenderWindow) {
+	DrawImage(-scrollX, -scrollY, m.surf, win)
 }
 
 func (m *Map) TileAt(x, y int) int {
