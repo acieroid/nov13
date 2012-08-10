@@ -48,14 +48,6 @@ func (g *Game) Run(win sfml.RenderWindow) int {
 				g.lastKey = time.Now()
 			}
 			switch ev.Code() {
-			case sfml.KeyLeft:
-				g.scrollX = Max(g.scrollX-SCROLLSTEP, 0)
-			case sfml.KeyRight:
-				g.scrollX = Min(g.scrollX+SCROLLSTEP, *Width)
-			case sfml.KeyUp:
-				g.scrollY = Max(g.scrollY-SCROLLSTEP, 0)
-			case sfml.KeyDown:
-				g.scrollY = Min(g.scrollY+SCROLLSTEP, *Height)
 			case sfml.KeyN:
 				g.ScrollToNext()
 			case sfml.KeyEscape:
@@ -111,6 +103,19 @@ func (g *Game) Run(win sfml.RenderWindow) int {
 			}
 		}
 		e, b = win.PollEvent()
+	}
+
+	if sfml.IsKeyPressed(sfml.KeyLeft) {
+		g.scrollX = Max(g.scrollX-SCROLLSTEP, 0)
+	}
+	if sfml.IsKeyPressed(sfml.KeyRight) {
+		g.scrollX = Min(g.scrollX+SCROLLSTEP, *Width)
+	}
+	if sfml.IsKeyPressed(sfml.KeyUp) {
+		g.scrollY = Max(g.scrollY-SCROLLSTEP, 0)
+	}
+	if sfml.IsKeyPressed(sfml.KeyDown) {
+		g.scrollY = Min(g.scrollY+SCROLLSTEP, *Height)
 	}
 
 	if g.mode == WATCH {

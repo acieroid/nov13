@@ -1,9 +1,5 @@
 package main
 
-/* TODO:
- - Don't enable key repeat, but instead check if directions are pressed to scroll
-*/
-
 import (
 	"github.com/acieroid/go-sfml"
 	"flag"
@@ -101,9 +97,8 @@ func main() {
 	vm := sfml.NewVideoMode(uint(*Width), uint(*Height), 32)
 	window := sfml.NewRenderWindowDefault(vm, "Novendiales 13")
 	black := sfml.FromRGB(0, 0, 0)
-	//window.SetFramerateLimit(150)
 	window.SetVerticalSyncEnabled(true)
-	//window.SetKeyRepeatEnabled(true)
+	window.SetKeyRepeatEnabled(false)
 
 	Font = LoadFont("font.ttf")
 	defer Font.Destroy()
