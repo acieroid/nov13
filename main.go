@@ -96,7 +96,7 @@ func main() {
 	vm := sfml.NewVideoMode(uint(*Width), uint(*Height), 32)
 	window := sfml.NewRenderWindow(vm, "Novendiales 13", sfml.StyleTitlebar|sfml.StyleClose, sfml.ContextSettings{nil})
 	black := sfml.FromRGB(0, 0, 0)
-	window.SetVerticalSyncEnabled(true)
+	window.SetFramerateLimit(30)
 	window.SetKeyRepeatEnabled(false)
 
 	Font = LoadFont("font.ttf")
